@@ -43,6 +43,7 @@
             },
             "args": [],
             "cwd": "${workspaceFolder}"
-        }
+        },
+      
     ]
 }
