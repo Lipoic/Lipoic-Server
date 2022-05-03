@@ -1,0 +1,32 @@
+name: Pull request review
+on: [pull_request]
+
+jobs:
+  clippy_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy          
+          override: true          
+      - uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ github.token }}
+          toolchain: nightly
+          args: --all-features
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          toolchain: nightly
+          args: --release --all-features
