@@ -1,5 +1,6 @@
 [package]
-authors = ["Madeline Sparkle"]
+authors = ["Madeline Sparkle", "The Contributors of Lipoic Organization"]
+description = "Backend server for Lipoic"
 edition = "2021"
 name = "lipoic_server"
 version = "0.1.0"
