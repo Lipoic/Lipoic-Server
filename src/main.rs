@@ -40,7 +40,7 @@ async fn main() -> mongodb::error::Result<()> {
     let mut client_options = ClientOptions::parse(mongodb_url).await?;
 
     // Manually set an option
-    client_options.app_name = Some("Rust Demo".to_string());
+    client_options.app_name = Some("Lipoic Server".to_string());
 
     // Get a handle to the cluster
     let client = Client::with_options(client_options)?;
