@@ -7,14 +7,15 @@ use mongodb::{bson::doc, options::ClientOptions, Client};
 use rocket::Request;
 use rocket_contrib::json::Json;
 
-mod secrets;
-
 mod data;
 mod util;
 
 use crate::data::response::Response;
 
-use crate::secrets::mongodb::URL;
+extern crate dotenv;
+
+use dotenv::dotenv;
+use std::env;
 
 #[catch(404)]
 fn not_found(req: &Request) -> Json<Response> {
@@ -33,7 +34,10 @@ fn index() -> Json<Response> {
 
 #[tokio::main]
 async fn main() -> mongodb::error::Result<()> {
-    let mut client_options = ClientOptions::parse(format!("mongodb+srv://{}", URL)).await?;
+    // load .env file
+    dotenv().ok();
+    let mongodb_url: String = env::var("MONGODB_URL").unwrap();
+    let mut client_options = ClientOptions::parse(mongodb_url).await?;
 
     // Manually set an option
     client_options.app_name = Some("Rust Demo".to_string());

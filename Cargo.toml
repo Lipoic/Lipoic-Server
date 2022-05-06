@@ -17,3 +17,4 @@ serde_derive = "1.0"
 tokio = "*"
 
 mongodb = "2.1.0"
+dotenv = "0.15.0"
