@@ -34,10 +34,9 @@ fn index() -> Json<Response> {
 #[tokio::main]
 async fn main() -> mongodb::error::Result<()> {
     // load .env file
-    if let Err(err) = dotenv::dotenv() {
-        println!("Error loading .env file: {}", err);
-    }
-    let mongodb_url: String = env::var("MONGODB_URL").unwrap_or_else(|_| "".to_string());
+    dotenv::dotenv().expect("Failed to load .env file");
+
+    let mongodb_url = env::var("MONGODB_URL").;
     let mut client_options = ClientOptions::parse(mongodb_url).await?;
 
     // Manually set an option
