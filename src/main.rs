@@ -14,7 +14,6 @@ use crate::data::response::Response;
 
 extern crate dotenv;
 
-use dotenv::dotenv;
 use std::env;
 
 #[catch(404)]
@@ -35,8 +34,10 @@ fn index() -> Json<Response> {
 #[tokio::main]
 async fn main() -> mongodb::error::Result<()> {
     // load .env file
-    dotenv().ok();
-    let mongodb_url: String = env::var("MONGODB_URL").unwrap();
+    if let Err(err) = dotenv::dotenv() {
+        println!("Error loading .env file: {}", err);
+    }
+    let mongodb_url: String = env::var("MONGODB_URL").unwrap_or_else(|_| "".to_string());
     let mut client_options = ClientOptions::parse(mongodb_url).await?;
 
     // Manually set an option
