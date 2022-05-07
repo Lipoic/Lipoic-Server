@@ -33,10 +33,10 @@ fn index() -> Json<Response> {
 
 #[tokio::main]
 async fn main() -> mongodb::error::Result<()> {
-    // load .env file
+    // Load .env file
     dotenv::dotenv().expect("Failed to load .env file");
 
-    let mongodb_url = env::var("MONGODB_URL").;
+    let mongodb_url = env::var("MONGODB_URL").unwrap();
     let mut client_options = ClientOptions::parse(mongodb_url).await?;
 
     // Manually set an option
@@ -46,10 +46,13 @@ async fn main() -> mongodb::error::Result<()> {
     let client = Client::with_options(client_options)?;
 
     // Ping the server to see if you can connect to the cluster
-    client
+    if let Err(err) = client
         .database("admin")
         .run_command(doc! {"ping": 1}, None)
-        .await?;
+        .await
+    {
+        panic!("Failed to connect to the database: {}", err);
+    }
     println!("Connected successfully.");
 
     // List the names of the databases in that cluster
