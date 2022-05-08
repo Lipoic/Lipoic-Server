@@ -1,20 +1,16 @@
-#![feature(proc_macro_hygiene, decl_macro)]
-
 #[macro_use]
 extern crate rocket;
+extern crate dotenv;
 
 use mongodb::{bson::doc, options::ClientOptions, Client};
 use rocket::Request;
-use rocket_contrib::json::Json;
+use rocket::serde::json::Json;
+use std::env;
 
 mod data;
 mod util;
 
 use crate::data::response::Response;
-
-extern crate dotenv;
-
-use std::env;
 
 #[catch(404)]
 fn not_found(req: &Request) -> Json<Response> {
@@ -31,7 +27,7 @@ fn index() -> Json<Response> {
     Json(Response::ok(&Some("hello world!")))
 }
 
-#[tokio::main]
+#[rocket::main]
 async fn main() -> mongodb::error::Result<()> {
     // Load .env file
     dotenv::dotenv().expect("Failed to load .env file");
@@ -60,10 +56,11 @@ async fn main() -> mongodb::error::Result<()> {
         println!("{}", db_name);
     }
 
-    rocket::ignite()
-        .register(catchers![not_found])
+    rocket::build()
+        .register("/", catchers![not_found])
         .mount("/", routes![index, teapot])
-        .launch();
+        .launch()
+        .await;
 
     Ok(())
 }
