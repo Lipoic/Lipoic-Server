@@ -47,7 +47,7 @@ async fn main() -> mongodb::error::Result<()> {
         .run_command(doc! {"ping": 1}, None)
         .await
     {
-        panic!("Failed to connect to the database: {}", err);
+        panic!("Failed to connect to the database: {:#?}", err);
     }
     println!("Connected successfully.");
 
