@@ -1,0 +1,19 @@
+[package]
+authors = ["Madeline Sparkle", "The Contributors of Lipoic Organization"]
+description = "Backend server for Lipoic"
+edition = "2021"
+name = "lipoic_server"
+version = "0.1.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = "0.5.0-rc.2"
+
+mongodb = "2.1.0"
+dotenv = "0.15.0"
+
+serde = "1.0"
+serde_derive = "1.0"
+
+router = { path = "../router" }
