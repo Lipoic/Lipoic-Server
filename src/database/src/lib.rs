@@ -1,10 +1,10 @@
 extern crate dotenv;
 
-use std::env;
 use mongodb::{bson::doc, options::ClientOptions, Client};
+use std::env;
 
 pub struct DB {
-    pub client: Client
+    pub client: Client,
 }
 
 /// init mongodb

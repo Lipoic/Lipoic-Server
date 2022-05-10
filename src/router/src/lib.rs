@@ -1,7 +1,8 @@
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
-use rocket::fairing::AdHoc;
 use database;
+use rocket::fairing::AdHoc;
 
 mod catch;
 mod data;
@@ -15,8 +16,8 @@ pub fn stage() -> AdHoc {
                     Ok(client) => {
                         info!("Connected successfully.");
                         Ok(rocket.manage(database::DB { client }))
-                    },
-                    Err(_) =>  Err(rocket)
+                    }
+                    Err(_) => Err(rocket),
                 }
             }))
             .attach(catch::stage())

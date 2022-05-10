@@ -1,5 +1,5 @@
+use rocket::serde::Serialize;
 use rocket::{http::Status, Request};
-use rocket::serde::{Serialize};
 
 use util::util::get_string;
 

@@ -1,8 +1,8 @@
+use crate::data::response::Response;
+use database::DB;
 use rocket::fairing::AdHoc;
 use rocket::serde::json::Json;
 use rocket::State;
-use database::DB;
-use crate::data::response::Response;
 
 #[get("/")]
 async fn hello_world(db: &State<DB>) -> Json<Response> {
@@ -20,7 +20,6 @@ fn teapot() -> Json<Response> {
 
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("catch stage", |rocket| async {
-        rocket
-            .mount("/", routes![hello_world, teapot])
+        rocket.mount("/", routes![hello_world, teapot])
     })
 }

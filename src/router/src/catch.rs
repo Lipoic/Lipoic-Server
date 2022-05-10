@@ -1,6 +1,6 @@
 use rocket::fairing::AdHoc;
 use rocket::serde::json::Json;
-use rocket::{Request};
+use rocket::Request;
 
 use crate::data::response::Response;
 
@@ -11,7 +11,6 @@ fn not_found(req: &Request) -> Json<Response> {
 
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("catch stage", |rocket| async {
-        rocket
-            .register("/", catchers![not_found])
+        rocket.register("/", catchers![not_found])
     })
 }
