@@ -1,9 +1,10 @@
+use rocket::serde::Serialize;
 use rocket::{http::Status, Request};
-use serde_derive::Serialize;
 
-use crate::util::get_string;
+use util::util::get_string;
 
 #[derive(Debug, Serialize)]
+#[serde(crate = "rocket::serde")]
 pub struct Response {
     pub code: u16,
     pub description: Option<String>,
