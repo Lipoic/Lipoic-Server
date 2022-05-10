@@ -6,7 +6,7 @@ use crate::data::response::Response;
 
 #[catch(404)]
 fn not_found(req: &Request) -> Json<Response> {
-    Json(Response::not_found(req))
+    Response::default().not_found(req).into()
 }
 
 pub fn stage() -> AdHoc {
