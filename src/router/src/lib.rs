@@ -11,13 +11,12 @@ mod resource;
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("catch stage", |rocket| async {
         rocket
-            .attach(AdHoc::try_on_ignite("Token State", |rocket| async {
-                match database::init().await {
-                    Ok(client) => {
-                        info!("Connected successfully.");
-                        Ok(rocket.manage(database::DB { client }))
-                    }
-                    Err(_) => Err(rocket),
+            .attach(AdHoc::try_on_ignite("Database State", |rocket| async {
+                if let Ok(client) = database::init().await {
+                    info!("Connected successfully.");
+                    Ok(rocket.manage(database::DB { client }))
+                } else {
+                    Err(rocket)
                 }
             }))
             .attach(catch::stage())
