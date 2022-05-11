@@ -8,7 +8,7 @@ pub struct DB {
 }
 
 /// init mongodb
-pub async fn init() -> mongodb::error::Result<Client> {
+pub async fn init() -> mongodb::error::Result<DB> {
     // Load environment variables
     dotenv::dotenv().expect("Failed to load .env file");
 
@@ -22,13 +22,11 @@ pub async fn init() -> mongodb::error::Result<Client> {
     let client = Client::with_options(client_options)?;
 
     // Ping the server to see if you can connect to the cluster
-    if let Err(err) = client
+    let document = client
         .database("admin")
-        .run_command(doc! {"ping": 1}, None)
-        .await
-    {
-        panic!("Failed to connect to the database: {:#?}", err);
-    }
+        .run_command(doc! {"ping": true}, None)
+        .await?;
+    print!("{}", document);
 
-    Ok(client)
+    Ok(DB { client })
 }
