@@ -13,7 +13,7 @@ jobs:
           override: true          
       - uses: actions-rs/clippy-check@v1.0.7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
           toolchain: nightly
           args: --all-features
   build:
