@@ -1,3 +1,4 @@
+mod model;
 extern crate dotenv;
 
 use mongodb::{bson::doc, options::ClientOptions, Client};
