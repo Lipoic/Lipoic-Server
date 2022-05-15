@@ -1,2 +1,2 @@
-pub mod util;
 pub mod oauth;
+pub mod util;

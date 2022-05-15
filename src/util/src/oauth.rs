@@ -1,5 +1,5 @@
-use urlencoding::encode;
 use serde::Deserialize;
+use urlencoding::encode;
 
 const GOOGLE_AUTH_URL: &str = "https://accounts.google.com/o/oauth2/auth";
 const GOOGLE_TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
@@ -8,7 +8,7 @@ pub struct GoogleOAuth<'a> {
     client_secret: String,
     client_id: String,
     issuer: String,
-    redirect_path: &'a str
+    redirect_path: &'a str,
 }
 
 #[derive(Deserialize, Debug)]
@@ -21,12 +21,17 @@ pub struct GoogleOauthAccessTokenInfo {
 }
 
 impl GoogleOAuth<'_> {
-    pub fn new(client_secret: String, client_id: String, issuer: String, redirect_path: &str) -> GoogleOAuth {
+    pub fn new(
+        client_secret: String,
+        client_id: String,
+        issuer: String,
+        redirect_path: &str,
+    ) -> GoogleOAuth {
         GoogleOAuth {
             client_secret,
             client_id,
             issuer,
-            redirect_path
+            redirect_path,
         }
     }
 
@@ -45,13 +50,17 @@ impl GoogleOAuth<'_> {
 
     /// authorization code
     /// return OAuth access token info
-    pub async fn authorization_code(&self, code: String, path: &str) -> Result<GoogleOauthAccessTokenInfo, Box<dyn std::error::Error>> {
+    pub async fn authorization_code(
+        &self,
+        code: String,
+        path: &str,
+    ) -> Result<GoogleOauthAccessTokenInfo, Box<dyn std::error::Error>> {
         let form_data = [
             ("client_id", self.client_id.clone()),
             ("client_secret", self.client_secret.clone()),
             ("grant_type", "authorization_code".to_string()),
             ("code", code),
-            ("redirect_uri", format!("{}{}", self.issuer, path))
+            ("redirect_uri", format!("{}{}", self.issuer, path)),
         ];
 
         let response = reqwest::Client::new()
