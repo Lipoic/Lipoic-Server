@@ -7,7 +7,7 @@ pub struct User {
     pub email: String,
     pub password_hash: Option<String>,
     pub integration: UserIntegration,
-    pub identities: Vec<UserIdentity>,
+    pub modes: Vec<UserMode>,
     pub login_ips: Vec<String>,
 }
 
@@ -19,7 +19,7 @@ pub struct UserIntegration {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum UserIdentity {
+pub enum UserMode {
     Student,
     Teacher,
     Parents,
