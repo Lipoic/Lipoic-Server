@@ -39,13 +39,6 @@ impl Response {
         self
     }
 
-    pub fn teapot(mut self, response: &Option<&'static str>) -> Self {
-        self.code = Status::ImATeapot.code;
-        self.description = get_string(response);
-
-        self
-    }
-
     pub fn not_found(mut self, req: &Request) -> Self {
         self.code = Status::NotFound.code;
         self.description = Some(format!("The requested page is invalid: {}", req.uri()));

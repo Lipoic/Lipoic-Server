@@ -9,6 +9,6 @@ fn hello_world() -> Json<Response> {
 
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("catch stage", |rocket| async {
-        rocket.mount("/", routes![hello_world, teapot])
+        rocket.mount("/", routes![hello_world])
     })
 }
