@@ -26,7 +26,7 @@ pub async fn rocket() -> Rocket<Build> {
 
     let config: Config = figment.extract().expect("config");
 
-    if config.test {
+    if !config.test {
         db_init(rocket, config)
             .await
             .unwrap_or_else(|error| panic!("{:?}", error))
