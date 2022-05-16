@@ -15,24 +15,28 @@ mod resource;
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Config {
-    develop: bool,
+    test: bool,
     mongodb_url: String,
 }
 
+/// rocket server
 pub async fn rocket() -> Rocket<Build> {
     let rocket = rocket::build().attach(stage());
     let figment = rocket.figment();
 
     let config: Config = figment.extract().expect("config");
 
-    if config.develop {}
-    db_init(rocket, config)
-        .await
-        .unwrap_or_else(|error| panic!("{:?}", error))
+    if config.test {
+        db_init(rocket, config)
+            .await
+            .unwrap_or_else(|error| panic!("{:?}", error))
+    } else {
+        rocket
+    }
 }
 
 pub fn stage() -> AdHoc {
-    AdHoc::on_ignite("catch stage", |rocket| async {
+    AdHoc::on_ignite("load router stage", |rocket| async {
         rocket
             .attach(AdHoc::config::<Config>())
             .attach(catch::stage())

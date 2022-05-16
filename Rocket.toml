@@ -1,8 +1,8 @@
 [default]
-develop = true
+test = true
 
 [release]
-develop = false
+test = false
 
 [debug]
 mongodb_url = "mongodb://root:root_password@localhost:27017/"
