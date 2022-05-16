@@ -12,22 +12,25 @@ mod db;
 mod debug;
 mod resource;
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Config {
     develop: bool,
     mongodb_url: String,
 }
 
-pub async fn rocket() -> Result<Rocket<Build>, rocket::Error> {
+pub async fn rocket() -> Rocket<Build> {
     let rocket = rocket::build().attach(stage());
     let figment = rocket.figment();
 
     let config: Config = figment.extract().expect("config");
 
-    Ok(db_init(rocket, config)
+    if config.develop {
+
+    }
+    db_init(rocket, config)
         .await
-        .unwrap_or_else(|error| panic!("{:?}", error)))
+        .unwrap_or_else(|error| panic!("{:?}", error))
 }
 
 pub fn stage() -> AdHoc {

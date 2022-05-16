@@ -298,7 +298,6 @@ checksum = "3ee2393c4a91429dffb4bedf19f4d6abf27d8a732c8ce4980305d782e5426d57"
 name = "database"
 version = "0.1.0"
 dependencies = [
- "dotenv",
  "mongodb",
  "tokio",
 ]
@@ -357,12 +356,6 @@ dependencies = [
  "crypto-common",
  "subtle",
 ]
-
-[[package]]
-name = "dotenv"
-version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77c90badedccf4105eca100756a0b1289e191f6fcbdadd3cee1d2f614f97da8f"
 
 [[package]]
 name = "either"
@@ -799,12 +792,8 @@ checksum = "7fb9b38af92608140b86b693604b9ffcc5824240a484d1ecd4795bacb2fe88f3"
 name = "lipoic_server"
 version = "0.1.0"
 dependencies = [
- "dotenv",
- "mongodb",
  "rocket",
  "router",
- "serde",
- "serde_derive",
 ]
 
 [[package]]
