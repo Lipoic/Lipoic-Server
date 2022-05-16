@@ -1,24 +1,12 @@
-extern crate dotenv;
-
+pub use mongodb::error::Error;
 use mongodb::{bson::doc, options::ClientOptions, Client};
-use std::env;
 
 pub struct DB {
-    pub client: Client,
+    pub client: Option<Client>,
 }
 
 /// init mongodb
-pub async fn init() -> mongodb::error::Result<DB> {
-    // Load environment variables
-    let mongodb_url = if let Ok(url) = env::var("MONGODB_URL") {
-        // deploy mode
-        url
-    } else {
-        // dev mode
-        // load .env file
-        dotenv::dotenv().expect("Failed to load .env file");
-        env::var("MONGODB_URL").unwrap()
-    };
+pub async fn init(mongodb_url: String) -> mongodb::error::Result<DB> {
     let mut client_options = ClientOptions::parse(mongodb_url).await?;
 
     // Manually set an option
@@ -34,5 +22,5 @@ pub async fn init() -> mongodb::error::Result<DB> {
         .await?;
     print!("{}", document);
 
-    Ok(DB { client })
+    Ok(DB { client: Some(client) })
 }
