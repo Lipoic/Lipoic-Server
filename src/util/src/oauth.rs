@@ -3,6 +3,7 @@ use urlencoding::encode;
 
 const GOOGLE_AUTH_URL: &str = "https://accounts.google.com/o/oauth2/auth";
 const GOOGLE_TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
+const GOOGLE_USER_INFO: &str = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
 
 pub struct GoogleOAuth<'a> {
     client_secret: String,
@@ -11,13 +12,25 @@ pub struct GoogleOAuth<'a> {
     redirect_path: &'a str,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct GoogleOauthAccessTokenInfo {
-    access_token: String,
-    expires_in: i32,
-    scope: String,
-    token_type: String,
-    id_token: String,
+#[derive(Deserialize)]
+pub struct AccessTokenInfo {
+    pub access_token: String,
+    pub expires_in: i32,
+    pub scope: String,
+    pub token_type: String,
+    pub id_token: String,
+}
+
+#[derive(Deserialize)]
+pub struct GoogleAccountInfo {
+    pub id: String,
+    pub email: String,
+    pub verified_email: bool,
+    pub name: String,
+    pub given_name: String,
+    pub family_name: String,
+    pub picture: String,
+    pub locale: String,
 }
 
 impl GoogleOAuth<'_> {
@@ -36,9 +49,12 @@ impl GoogleOAuth<'_> {
     }
 
     /// get google oauth url
+    ///
+    /// return one url [`String`]
     pub fn get_auth_url(&self) -> String {
         let scope = encode("https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email");
         let redirect_uri = format!("{}{}", self.issuer, self.redirect_path);
+
         format!(
             "{}?client_id={}&response_type=code&scope={}&redirect_uri={}",
             GOOGLE_AUTH_URL,
@@ -49,18 +65,21 @@ impl GoogleOAuth<'_> {
     }
 
     /// authorization code
-    /// return OAuth access token info
+    ///
+    /// return [`AccessTokenInfo`]
     pub async fn authorization_code(
         &self,
         code: String,
-        path: &str,
-    ) -> Result<GoogleOauthAccessTokenInfo, Box<dyn std::error::Error>> {
+    ) -> Result<AccessTokenInfo, Box<dyn std::error::Error>> {
         let form_data = [
             ("client_id", self.client_id.clone()),
             ("client_secret", self.client_secret.clone()),
             ("grant_type", "authorization_code".to_string()),
             ("code", code),
-            ("redirect_uri", format!("{}{}", self.issuer, path)),
+            (
+                "redirect_uri",
+                format!("{}{}", self.issuer, self.redirect_path),
+            ),
         ];
 
         let response = reqwest::Client::new()
@@ -70,6 +89,21 @@ impl GoogleOAuth<'_> {
             .send()
             .await?;
 
-        Ok(response.json::<GoogleOauthAccessTokenInfo>().await?)
+        Ok(response.json::<AccessTokenInfo>().await?)
+    }
+}
+
+impl AccessTokenInfo {
+    /// request user info
+    ///
+    /// return [`GoogleAccountInfo`]
+    pub async fn get_user_info(&self) -> Result<GoogleAccountInfo, Box<dyn std::error::Error>> {
+        let response = reqwest::Client::new()
+            .get(GOOGLE_USER_INFO)
+            .bearer_auth(self.access_token.clone())
+            .send()
+            .await?;
+
+        Ok(response.json::<GoogleAccountInfo>().await?)
     }
 }
