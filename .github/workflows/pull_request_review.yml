@@ -18,9 +18,10 @@ jobs:
           args: --all-features
   test:
     runs-on: ubuntu-latest
+    env:
+     ROCKET_TEST: test
     steps:
-      - env:
-          ROCKET_TEST: test
+
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
