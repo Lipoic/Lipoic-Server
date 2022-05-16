@@ -2,7 +2,7 @@ pub use mongodb::error::Error;
 use mongodb::{bson::doc, options::ClientOptions, Client};
 
 pub struct DB {
-    pub client: Client,
+    pub client: Option<Client>,
 }
 
 /// init mongodb
@@ -22,5 +22,5 @@ pub async fn init(mongodb_url: String) -> mongodb::error::Result<DB> {
         .await?;
     print!("{}", document);
 
-    Ok(DB { client })
+    Ok(DB { client: Some(client) })
 }

@@ -1,5 +1,5 @@
 [default]
-test = false
+test = true
 
 [debug]
 mongodb_url = "mongodb://root:root_password@localhost:27017/"
