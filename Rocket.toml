@@ -1,7 +1,8 @@
 [default]
-test = true
+test = false
 
 [debug]
+test = true
 mongodb_url = "mongodb://root:root_password@localhost:27017/"
 private_key = """-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEAu7GM38CWWJUdVtZzjukVN2VdIwTOiP1YMadzc3wI5K8cT98O
