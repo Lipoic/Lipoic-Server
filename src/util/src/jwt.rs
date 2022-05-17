@@ -13,18 +13,18 @@ pub struct Claims {
 
 /// create a new JWT token
 pub fn create_jwt_token(private_key: &[u8], claims: Claims) -> Result<String> {
-    Ok(encode(
+    encode(
         &Header::new(Algorithm::RS256),
         &claims,
         &EncodingKey::from_rsa_pem(private_key)?,
-    )?)
+    )
 }
 
 /// verify JWT token correctness
 pub fn verify_token(token: String, public_key: &[u8]) -> Result<TokenData<Claims>> {
-    Ok(decode::<Claims>(
+    decode::<Claims>(
         token.as_str(),
         &DecodingKey::from_rsa_pem(public_key)?,
         &Validation::new(Algorithm::RS256),
-    )?)
+    )
 }
