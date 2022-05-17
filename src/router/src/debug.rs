@@ -15,7 +15,14 @@ impl Response {
 #[get("/debug/db")]
 async fn debug_db(db: &State<DB>) -> Json<Response> {
     Response::default()
-        .debug_db(db.client.as_ref().unwrap().list_database_names(None, None).await.ok())
+        .debug_db(
+            db.client
+                .as_ref()
+                .unwrap()
+                .list_database_names(None, None)
+                .await
+                .ok(),
+        )
         .into()
 }
 
