@@ -10,6 +10,7 @@ pub struct Claims {
     pub exp: usize,
 }
 
+/// create a new JWT token
 pub fn create_jwt_token(private_key: &[u8], claims: Claims) -> Result<String> {
     Ok(encode(
         &Header::new(Algorithm::RS256),
@@ -18,6 +19,7 @@ pub fn create_jwt_token(private_key: &[u8], claims: Claims) -> Result<String> {
     )?)
 }
 
+/// verify JWT token correctness
 pub fn verify_token(token: String, public_key: &[u8]) -> Result<TokenData<Claims>> {
     Ok(decode::<Claims>(
         token.as_str(),
