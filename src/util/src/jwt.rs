@@ -1,3 +1,4 @@
+pub use jsonwebtoken::errors;
 use jsonwebtoken::errors::Result;
 use jsonwebtoken::{
     decode, encode, Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation,

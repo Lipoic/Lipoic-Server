@@ -16,6 +16,8 @@ mod resource;
 #[serde(crate = "rocket::serde")]
 pub struct Config {
     test: bool,
+    private_key: String,
+    public_key: String,
     mongodb_url: String,
 }
 
