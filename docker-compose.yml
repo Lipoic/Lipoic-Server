@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    expose:
+      - 27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root_password
+  backend:
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      - ROCKET_MONGODB_URL=mongodb://root:root_password@mongo/
+      - ROCKET_PORT=8000
+      - ROCKET_ADDRESS=0.0.0.0
+    depends_on:
+      - mongo
