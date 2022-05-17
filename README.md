@@ -4,9 +4,11 @@
 <p>&nbsp;</p>
 
 ## Deployment
-Use Docker deploy Lipoic-Backend
-1. Install [docker-compose](https://docs.docker.com/compose/install/)
-2. run [`./deploy.sh`](./deploy.sh)
+Use Docker deploy Lipoic-Backend.
+1. Install [docker-compose](https://docs.docker.com/compose/install/).
+2. Run [`./genrsa.sh`](./genrsa.sh) generate RSA private key and public key.
+3. Change [`docker-compose.yml`](./docker-compose.yml) environment to your.
+4. Run [`./deploy.sh`](./deploy.sh).
 
 ## Contribute
 1. [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) this [repository](https://github.com/Lipoic/Lipoic-Server) to your own GitHub account and then [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) it to your local device
