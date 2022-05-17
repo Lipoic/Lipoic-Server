@@ -5,31 +5,17 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
     /// Required (validate_exp defaults to true in validation). Expiration time (as UTC timestamp)
-    exp: usize,
+    pub exp: usize,
 }
 
-pub struct CreateToken {
-    claims: Claims
-}
-
-impl CreateToken {
-    pub fn new(exp: usize) -> CreateToken {
-        CreateToken {
-            claims: Claims {
-                exp,
-            },
-        }
-    }
-
-    pub fn create_jwt_token(&self, private_key: &[u8]) -> Result<String> {
-        Ok(
-            encode(
-                &Header::new(Algorithm::RS256),
-                &self.claims,
-                &EncodingKey::from_rsa_pem(private_key)?,
-            )?
-        )
-    }
+pub fn create_jwt_token(private_key: &[u8], claims: Claims) -> Result<String> {
+    Ok(
+        encode(
+            &Header::new(Algorithm::RS256),
+            &claims,
+            &EncodingKey::from_rsa_pem(private_key)?,
+        )?
+    )
 }
 
 pub fn verify_token(token: String, public_key: &[u8]) -> Result<TokenData<Claims>> {
