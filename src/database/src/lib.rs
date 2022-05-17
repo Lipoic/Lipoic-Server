@@ -22,5 +22,7 @@ pub async fn init(mongodb_url: String) -> mongodb::error::Result<DB> {
         .await?;
     print!("{}", document);
 
-    Ok(DB { client: Some(client) })
+    Ok(DB {
+        client: Some(client),
+    })
 }
