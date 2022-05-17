@@ -32,6 +32,7 @@ jobs:
           openssl rsa -in privkey.pem -pubout > pubkey.pub
           cat privkey.pem
           cat pubkey.pub
+          echo ls
       - name: Test
         uses: actions-rs/cargo@v1
         with:
