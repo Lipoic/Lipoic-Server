@@ -7,7 +7,7 @@ COPY ./Cargo.toml .
 
 RUN cargo build --release
 
-FROM debian:stable
+FROM debian:sid-slim
 
 WORKDIR /root/
 
