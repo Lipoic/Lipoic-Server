@@ -1,6 +1,9 @@
 [default]
 test = false
 
+[release]
+address = "0.0.0.0"
+
 [debug]
 test = true
 mongodb_url = "mongodb://root:root_password@localhost:27017/"

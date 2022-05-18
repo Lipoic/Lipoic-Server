@@ -7,9 +7,5 @@ COPY ./Cargo.toml ./Cargo.toml
 COPY ./Rocket.toml ./Rocket.toml
 
 RUN cargo build --release
-RUN mv ./target/release/lipoic_server ./lipoic_server
-RUN rm -rf ./src
-RUN rm -rf ./target
 
-EXPOSE 8000
-ENTRYPOINT ["./lipoic_server"]
+ENTRYPOINT ["./target/release/lipoic_server"]
