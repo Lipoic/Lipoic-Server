@@ -1,8 +1,6 @@
 # Lipoic-Backend
-
 [![](https://img.shields.io/github/license/Lipoic/Lipoic-Frontend.svg)](LICENSE)
 [![Rocket Homepage](https://img.shields.io/badge/web-rocket.rs-red.svg?style=flat&label=https&colorB=d33847)](https://rocket.rs)
-<p>&nbsp;</p>
 
 ## Deployment
 Use Docker deploy Lipoic-Backend.
