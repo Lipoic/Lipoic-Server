@@ -5,7 +5,7 @@ pub struct DB {
     pub client: Option<Client>,
 }
 
-/// init mongodb
+/// Init mongodb
 pub async fn init(mongodb_url: String) -> mongodb::error::Result<DB> {
     let mut client_options = ClientOptions::parse(mongodb_url).await?;
 
