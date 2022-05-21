@@ -1,15 +1,17 @@
-FROM rust:1.60.0
+FROM rust:1.60.0 AS builder
 
-WORKDIR /usr/src/myapp
+WORKDIR /usr/lipoic-backend
 COPY ./src ./src
-COPY ./Cargo.lock ./Cargo.lock
-COPY ./Cargo.toml ./Cargo.toml
-COPY ./Rocket.toml ./Rocket.toml
+COPY ./Cargo.lock .
+COPY ./Cargo.toml .
 
 RUN cargo build --release
-RUN mv ./target/release/lipoic_server ./lipoic_server
-RUN rm -rf ./src
-RUN rm -rf ./target
 
-EXPOSE 8000
+FROM debian:sid-slim
+
+WORKDIR /root/
+
+COPY --from=builder /usr/lipoic-backend/target/release/lipoic_server .
+COPY ./Rocket.toml .
+
 ENTRYPOINT ["./lipoic_server"]
