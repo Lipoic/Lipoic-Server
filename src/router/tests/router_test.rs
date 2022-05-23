@@ -3,7 +3,7 @@ use rocket::local::asynchronous::Client;
 
 #[rocket::async_test]
 async fn hello_test() {
-    let client = Client::tracked(router::rocket().await)
+    let client = Client::tracked(router::rocket(true).await)
         .await
         .expect("valid rocket instance");
     let req = client.get("/");
