@@ -17,6 +17,7 @@ services:
       ROCKET_MONGODB_URL: mongodb://root:root_password@mongo/
       ROCKET_PORT: 8000
       ROCKET_ADDRESS: 0.0.0.0
+      ROCKET_LOG_LEVEL: normal
       # you public key
       ROCKET_PUBLIC_KEY: |-
         -----BEGIN PUBLIC KEY-----
