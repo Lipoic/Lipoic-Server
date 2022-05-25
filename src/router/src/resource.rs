@@ -5,7 +5,7 @@ use rocket::serde::json::Json;
 
 #[get("/")]
 fn hello_world() -> Json<Response<String>> {
-    Response::data(ErrorCode::Ok, None, String::from(""))
+    Response::data(ErrorCode::Ok, None, String::from("hello world!"))
 }
 
 pub fn stage() -> AdHoc {

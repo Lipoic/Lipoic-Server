@@ -11,13 +11,13 @@ async fn hello_test() {
     assert_eq!(response.0.status(), Status::Ok);
     assert_eq!(
         response.0.into_string().await.unwrap(),
-        r#"{"code":200,"description":"hello world!"}"#
+        r#"{"error_code":200,"data":"hello world!"}"#
     )
 }
 
 #[rocket::async_test]
 async fn not_found_test() {
-    let client = Client::tracked(router::rocket().await)
+    let client = Client::tracked(router::rocket(true).await)
         .await
         .expect("valid rocket instance");
     let req = client.get("/test");
@@ -25,6 +25,6 @@ async fn not_found_test() {
     assert_eq!(response.0.status(), Status::NotFound);
     assert_eq!(
         response.0.into_string().await.unwrap(),
-        r#"{"code":404,"description":"The requested page is invalid: /test"}"#
+        r#"{"error_code":404,"error_message":"The requested page is invalid: /test","data":"Error"}"#
     )
 }
