@@ -51,7 +51,7 @@ async fn google_oauth_code(
     config: &State<Config>,
     db: &State<DB>,
     request_ip: RequestIp,
-) -> Result<Json<Response<Token>>, BadRequest<String>> {
+) -> Result<Json<Response<Token>>, BadRequest<Json<Response<String>>>> {
     let google_auth = GoogleOAuth::new(
         config.google_oauth_secret.clone(),
         config.google_oauth_id.clone(),
@@ -64,7 +64,11 @@ async fn google_oauth_code(
             let login_user_info = if let Ok(info) = data.get_user_info().await {
                 info
             } else {
-                return Err(BadRequest(Some(String::new())));
+                return Err(BadRequest(Some(Response::data(
+                    Code::OAuthGetUserInfoError,
+                    Some(String::from("Invalid OAuth token.")),
+                    String::new(),
+                ))));
             };
             // Expiration time: 1 weak
             let exp = SystemTime::now()
@@ -94,7 +98,11 @@ async fn google_oauth_code(
 
             Ok(Response::data(Code::Ok, None, Token { token }).into())
         }
-        Err(_) => Err(BadRequest(Some(String::from("code error")))),
+        Err(_) => Err(BadRequest(Some(Response::data(
+            Code::OAuthCodeError,
+            Some(String::from("Invalid code.")),
+            String::new(),
+        )))),
     }
 }
 
