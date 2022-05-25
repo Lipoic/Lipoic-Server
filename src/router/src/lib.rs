@@ -10,7 +10,7 @@ mod catch;
 mod data;
 mod db;
 mod debug;
-mod resource;
+pub mod resource;
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]

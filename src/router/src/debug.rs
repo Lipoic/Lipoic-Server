@@ -1,31 +1,23 @@
+use crate::data::error_code::ErrorCode;
 use crate::Config;
 use database::DB;
-use rocket::{fairing::AdHoc, http::Status, serde::json::Json, State};
+use rocket::{fairing::AdHoc, serde::json::Json, State};
 use util::jwt::{create_jwt_token, verify_token, Claims};
 
 use crate::data::response::Response;
 
-impl Response {
-    fn debug_db(mut self, debug_db_names: Option<Vec<String>>) -> Self {
-        self.code = Status::Ok.code;
-        self.debug_db_names = debug_db_names;
-
-        self
-    }
-}
-
 #[get("/db")]
-async fn debug_db(db: &State<DB>) -> Json<Response> {
-    Response::default()
-        .debug_db(
-            db.client
-                .as_ref()
-                .unwrap()
-                .list_database_names(None, None)
-                .await
-                .ok(),
-        )
-        .into()
+async fn debug_db(db: &State<DB>) -> Json<Response<Option<Vec<String>>>> {
+    Response::data(
+        ErrorCode::Ok,
+        None,
+        db.client
+            .as_ref()
+            .unwrap()
+            .list_database_names(None, None)
+            .await
+            .ok(),
+    )
 }
 
 #[get("/jwt")]

@@ -1,48 +1,47 @@
+use rocket::serde::json::Json;
 use rocket::serde::ser::SerializeStruct;
 use rocket::serde::Serialize;
-use rocket::{http::Status, Request};
+use schemars::JsonSchema;
 
-use util::util::get_string;
+use crate::data::error_code::ErrorCode;
 
-#[derive(Debug, Default)]
-pub struct Response {
-    pub code: u16,
-    pub description: Option<String>,
-    pub debug_db_names: Option<Vec<String>>,
+#[derive(Debug, JsonSchema)]
+pub struct Response<T> {
+    pub error_code: ErrorCode,
+    pub error_message: Option<String>,
+    pub data: T,
 }
-impl Serialize for Response {
+
+impl<T: rocket::serde::Serialize> Serialize for Response<T> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: rocket::serde::Serializer,
     {
         let mut state = serializer.serialize_struct("response", 3)?;
 
-        state.serialize_field("code", &self.code)?;
+        state.serialize_field("error_code", &self.error_code.get_error_code())?;
 
-        self.description
+        self.error_message
             .as_ref()
-            .and_then(|v| state.serialize_field("description", &v).ok());
+            .and_then(|v| state.serialize_field("error_message", &v).ok());
 
-        self.debug_db_names
-            .as_ref()
-            .and_then(|v| state.serialize_field("debug_db_names", &v).ok());
+        state.serialize_field("data", &self.data)?;
 
         state.end()
     }
 }
 
-impl Response {
-    pub fn ok(mut self, response: &Option<&'static str>) -> Self {
-        self.code = Status::Ok.code;
-        self.description = get_string(response);
-
-        self
-    }
-
-    pub fn not_found(mut self, req: &Request) -> Self {
-        self.code = Status::NotFound.code;
-        self.description = Some(format!("The requested page is invalid: {}", req.uri()));
-
-        self
+impl<T> Response<T> {
+    pub fn data(
+        error_code: ErrorCode,
+        error_message: Option<String>,
+        data: T,
+    ) -> Json<Response<T>> {
+        Response {
+            error_message,
+            error_code,
+            data,
+        }
+        .into()
     }
 }

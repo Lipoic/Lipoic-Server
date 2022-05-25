@@ -1,3 +1,5 @@
+pub mod model;
+
 pub use mongodb::error::Error;
 use mongodb::{bson::doc, options::ClientOptions, Client};
 
