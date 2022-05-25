@@ -1,4 +1,4 @@
-use crate::data::error_code::ErrorCode;
+use crate::data::error_code::Code;
 use crate::Config;
 use database::DB;
 use rocket::{fairing::AdHoc, serde::json::Json, State};
@@ -9,7 +9,7 @@ use crate::data::response::Response;
 #[get("/db")]
 async fn debug_db(db: &State<DB>) -> Json<Response<Option<Vec<String>>>> {
     Response::data(
-        ErrorCode::Ok,
+        Code::Ok,
         None,
         db.client
             .as_ref()

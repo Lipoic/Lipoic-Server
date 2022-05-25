@@ -1,4 +1,4 @@
-use crate::data::error_code::ErrorCode;
+use crate::data::error_code::Code;
 use rocket::fairing::AdHoc;
 use rocket::serde::json::Json;
 use rocket::Request;
@@ -8,7 +8,7 @@ use crate::data::response::Response;
 #[catch(404)]
 fn not_found(req: &Request) -> Json<Response<String>> {
     Response::data(
-        ErrorCode::NotFound,
+        Code::NotFound,
         Some(format!("The requested page is invalid: {}", req.uri())),
         "Error".to_string(),
     )

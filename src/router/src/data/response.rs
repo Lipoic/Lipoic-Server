@@ -2,11 +2,11 @@ use rocket::serde::json::Json;
 use rocket::serde::ser::SerializeStruct;
 use rocket::serde::Serialize;
 
-use crate::data::error_code::ErrorCode;
+use crate::data::error_code::Code;
 
 #[derive(Debug)]
 pub struct Response<T> {
-    pub code: ErrorCode,
+    pub code: Code,
     pub error_message: Option<String>,
     pub data: T,
 }
@@ -32,7 +32,7 @@ impl<T: rocket::serde::Serialize> Serialize for Response<T> {
 
 impl<T> Response<T> {
     pub fn data(
-        error_code: ErrorCode,
+        error_code: Code,
         error_message: Option<String>,
         data: T,
     ) -> Json<Response<T>> {
