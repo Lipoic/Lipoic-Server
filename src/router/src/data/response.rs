@@ -6,7 +6,7 @@ use crate::data::error_code::ErrorCode;
 
 #[derive(Debug)]
 pub struct Response<T> {
-    pub error_code: ErrorCode,
+    pub code: ErrorCode,
     pub error_message: Option<String>,
     pub data: T,
 }
@@ -18,7 +18,7 @@ impl<T: rocket::serde::Serialize> Serialize for Response<T> {
     {
         let mut state = serializer.serialize_struct("response", 3)?;
 
-        state.serialize_field("error_code", &self.error_code.get_error_code())?;
+        state.serialize_field("code", &self.code.get_error_code())?;
 
         self.error_message
             .as_ref()
@@ -38,7 +38,7 @@ impl<T> Response<T> {
     ) -> Json<Response<T>> {
         Response {
             error_message,
-            error_code,
+            code: error_code,
             data,
         }
         .into()

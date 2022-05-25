@@ -11,7 +11,7 @@ async fn hello_test() {
     assert_eq!(response.0.status(), Status::Ok);
     assert_eq!(
         response.0.into_string().await.unwrap(),
-        r#"{"error_code":200,"data":"hello world!"}"#
+        r#"{"code":200,"data":"hello world!"}"#
     )
 }
 
@@ -25,6 +25,6 @@ async fn not_found_test() {
     assert_eq!(response.0.status(), Status::NotFound);
     assert_eq!(
         response.0.into_string().await.unwrap(),
-        r#"{"error_code":404,"error_message":"The requested page is invalid: /test","data":"Error"}"#
+        r#"{"code":404,"error_message":"The requested page is invalid: /test","data":"Error"}"#
     )
 }
