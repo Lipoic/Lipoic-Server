@@ -46,7 +46,15 @@ fn create_jwt_token_test() {
         .duration_since(UNIX_EPOCH)
         .expect("Time went backwards")
         .as_secs();
-    let token = create_jwt_token(PRIVATE_KEY.as_bytes(), Claims { exp: exp as usize }).unwrap();
+    let token = create_jwt_token(
+        PRIVATE_KEY.as_bytes(),
+        Claims {
+            exp: exp as usize,
+            email: "".to_string(),
+            username: "".to_string(),
+        },
+    )
+    .unwrap();
 
     verify_token(token.clone(), PUBLIC_KEY.as_bytes()).unwrap();
 }

@@ -1,3 +1,4 @@
+use reqwest::Error;
 use serde::Deserialize;
 use urlencoding::encode;
 
@@ -67,10 +68,7 @@ impl GoogleOAuth<'_> {
     /// authorization code
     ///
     /// return [`AccessTokenInfo`]
-    pub async fn authorization_code(
-        &self,
-        code: String,
-    ) -> Result<AccessTokenInfo, Box<dyn std::error::Error>> {
+    pub async fn authorization_code(&self, code: String) -> Result<AccessTokenInfo, Error> {
         let form_data = [
             ("client_id", self.client_id.clone()),
             ("client_secret", self.client_secret.clone()),

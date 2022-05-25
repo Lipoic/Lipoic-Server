@@ -1,10 +1,13 @@
 pub mod model;
 
+pub use mongodb::bson::doc;
 pub use mongodb::error::Error;
-use mongodb::{bson::doc, options::ClientOptions, Client};
+pub use mongodb::Collection;
+use mongodb::{options::ClientOptions, Client};
 
 pub struct DB {
     pub client: Option<Client>,
+    pub user: Option<Collection<model::auth::user::User>>,
 }
 
 /// Init mongodb
@@ -16,15 +19,16 @@ pub async fn init(mongodb_url: String) -> mongodb::error::Result<DB> {
 
     // Get a handle to the cluster
     let client = Client::with_options(client_options)?;
+    let db = client.database("local");
 
     // Ping the server to see if you can connect to the cluster
-    let document = client
+    client
         .database("admin")
         .run_command(doc! {"ping": true}, None)
         .await?;
-    print!("{}", document);
 
     Ok(DB {
         client: Some(client),
+        user: Some(db.collection("user")),
     })
 }
