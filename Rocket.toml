@@ -3,6 +3,8 @@ address = "0.0.0.0"
 
 [debug]
 mongodb_url = "mongodb://root:root_password@localhost:27017/"
+
+# JWT keys
 private_key = """-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEAu7GM38CWWJUdVtZzjukVN2VdIwTOiP1YMadzc3wI5K8cT98O
 iDcGw662/Y9JYwKZX4Vjgu7HNyoLQPstUMGuqZ8eIYkUM10Ny8dMoQz9jwbC2bXW
@@ -40,3 +42,8 @@ Vc5QUEf9rKd1vIUwmAdY+oBzJqVU2ppFxqms1qNzPtB3wlkCLKyWq+pOP/8o3Q7l
 EQIDAQAB
 -----END PUBLIC KEY-----
 """
+# google OAuth2 information
+google_oauth_id=""
+google_oauth_secret=""
+
+issuer="http://127.0.0.1:8000"

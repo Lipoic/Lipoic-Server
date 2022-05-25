@@ -13,9 +13,9 @@ pub struct User {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserIntegration {
-    pub google: String,
-    pub facebook: String,
-    pub taiwan_cloud_education: String,
+    pub google: bool,
+    pub facebook: bool,
+    pub taiwan_cloud_education: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

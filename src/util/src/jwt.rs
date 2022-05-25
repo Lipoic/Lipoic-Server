@@ -9,6 +9,8 @@ use serde::{Deserialize, Serialize};
 pub struct Claims {
     /// Required (validate_exp defaults to true in validation). Expiration time (as UTC timestamp)
     pub exp: usize,
+    pub email: String,
+    pub username: String,
 }
 
 /// create a new JWT token

@@ -1,7 +1,6 @@
 use rocket::serde::json::Json;
 use rocket::serde::ser::SerializeStruct;
 use rocket::serde::Serialize;
-use rocket::http::Status;
 
 use crate::data::error_code::Code;
 
@@ -32,11 +31,7 @@ impl<T: rocket::serde::Serialize> Serialize for Response<T> {
 }
 
 impl<T> Response<T> {
-    pub fn data(
-        error_code: Code,
-        error_message: Option<String>,
-        data: T,
-    ) -> Json<Response<T>> {
+    pub fn data(error_code: Code, error_message: Option<String>, data: T) -> Json<Response<T>> {
         Response {
             error_message,
             code: error_code,
