@@ -1,10 +1,15 @@
+use std::path::PathBuf;
 use rocket::fairing::AdHoc;
 use rocket::fs::NamedFile;
+use rocket::response::status::NotFound;
 use rocket::Request;
 
 #[catch(404)]
-async fn not_found(_: &Request<'_>) -> Option<NamedFile> {
-    NamedFile::open("./resources/404.html").await.ok()
+async fn not_found(_: &Request<'_>) -> NotFound<Option<NamedFile>> {
+    let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    path.push("../../resources/404.html");
+    println!("{:?}", &path);
+    NotFound(NamedFile::open(path).await.ok())
 }
 
 pub fn stage() -> AdHoc {
