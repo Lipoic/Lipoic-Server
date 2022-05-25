@@ -7,7 +7,7 @@ pub enum Code {
 }
 
 impl Code {
-    pub fn get_error_code(&self) -> usize {
+    pub fn get_code(&self) -> usize {
         match self {
             Ok => 200,
             NotFound => 404,

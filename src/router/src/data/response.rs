@@ -1,6 +1,7 @@
 use rocket::serde::json::Json;
 use rocket::serde::ser::SerializeStruct;
 use rocket::serde::Serialize;
+use rocket::http::Status;
 
 use crate::data::error_code::Code;
 
@@ -18,7 +19,7 @@ impl<T: rocket::serde::Serialize> Serialize for Response<T> {
     {
         let mut state = serializer.serialize_struct("response", 3)?;
 
-        state.serialize_field("code", &self.code.get_error_code())?;
+        state.serialize_field("code", &self.code.get_code())?;
 
         self.error_message
             .as_ref()
