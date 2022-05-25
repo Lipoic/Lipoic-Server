@@ -1,7 +1,6 @@
 use self::ErrorCode::*;
-use schemars::JsonSchema;
 
-#[derive(Debug, JsonSchema)]
+#[derive(Debug)]
 pub enum ErrorCode {
     Ok,
     NotFound,

@@ -1,11 +1,10 @@
 use rocket::serde::json::Json;
 use rocket::serde::ser::SerializeStruct;
 use rocket::serde::Serialize;
-use schemars::JsonSchema;
 
 use crate::data::error_code::ErrorCode;
 
-#[derive(Debug, JsonSchema)]
+#[derive(Debug)]
 pub struct Response<T> {
     pub error_code: ErrorCode,
     pub error_message: Option<String>,
