@@ -2,7 +2,8 @@ use crate::data::auth_data::{Auth, Token};
 use crate::data::error_code::Code;
 use crate::resource::Response;
 use crate::Config;
-use database::model::auth::user::User;
+use database::model::auth::user::{ConnectAccount, ConnectType, User};
+use database::mongodb::bson;
 use database::mongodb::options::FindOneAndUpdateOptions;
 use database::DB;
 use database::{doc, Collection, Error};
@@ -46,9 +47,15 @@ fn google_oauth(redirect_uri: &str, config: &State<Config>) -> Json<Response<Aut
     )
 }
 
-#[get("/google?<code>")]
+/// Response data [Token]
+///
+/// # Parameters
+/// * `code` - A OAuth2 code
+/// * `oauth_redirect_uri` - A OAuth2 redirect uri
+#[get("/google?<code>&<oauth_redirect_uri>")]
 async fn google_oauth_code(
     code: String,
+    oauth_redirect_uri: &str,
     config: &State<Config>,
     db: &State<DB>,
     request_ip: RequestIp,
@@ -57,7 +64,7 @@ async fn google_oauth_code(
         config.google_oauth_secret.clone(),
         config.google_oauth_id.clone(),
         config.issuer.clone(),
-        "/authentication/google",
+        oauth_redirect_uri,
     );
 
     match google_auth.authorization_code(code).await {
@@ -83,6 +90,11 @@ async fn google_oauth_code(
                 login_user_info.name.clone(),
                 login_user_info.email.clone(),
                 request_ip.0,
+                Some(ConnectAccount {
+                    account_type: ConnectType::Google,
+                    name: login_user_info.name.clone(),
+                    email: login_user_info.email.clone(),
+                }),
             )
             .await
             .unwrap();
@@ -108,11 +120,13 @@ async fn google_oauth_code(
     }
 }
 
+/// Update user info if it exists else insert
 async fn create_and_update_user_info(
     user: &Collection<User>,
     username: String,
     email: String,
     ip: String,
+    connect: Option<ConnectAccount>,
 ) -> Result<User, Error> {
     let mut option = FindOneAndUpdateOptions::default();
     option.upsert = Some(true);
@@ -127,32 +141,55 @@ async fn create_and_update_user_info(
                     "modes": [],
                     "login_ips": [],
                     "password_hash": null,
-                    "integration": []
+                    "connect": []
                 }
             },
             option,
         )
         .await?
-        .unwrap();
+        .unwrap_or(
+            user.find_one(
+                doc! {
+                    "email": &email
+                },
+                None,
+            )
+            .await?
+            .unwrap(),
+        );
 
-    user.find_one_and_update(
+    user.update_one(
         doc! { "email": &email },
         doc! {
             "$addToSet": {
                 "login_ips": ip,
-                "modes": "Student"
+                "modes": "Student",
             }
         },
         None,
     )
     .await?;
 
+    if let Some(connect) = connect {
+        user.update_one(
+            doc! { "email": &email },
+            doc! {
+                "$addToSet": {
+                    "connect": bson::to_bson(&connect).unwrap()
+                }
+            },
+            None,
+        ).await?;
+    }
+
     Ok(user_data)
 }
 
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load authentication stage", |rocket| async {
-        rocket
-            .mount("/authentication", routes![google_oauth, google_oauth_code])
+        rocket.mount(
+            "/api/authentication",
+            routes![google_oauth, google_oauth_code],
+        )
     })
 }
