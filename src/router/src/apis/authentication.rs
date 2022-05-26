@@ -115,7 +115,7 @@ async fn create_and_update_user_info(
     let mut option = FindOneAndUpdateOptions::default();
     option.upsert = Some(true);
 
-    let a = user.find_one_and_update(
+    user.find_one_and_update(
         doc! { "email": &email },
         doc! {
             "$setOnInsert": {
@@ -140,7 +140,6 @@ async fn create_and_update_user_info(
         },
         None
     ).await?;
-
 
     Ok(())
 }
