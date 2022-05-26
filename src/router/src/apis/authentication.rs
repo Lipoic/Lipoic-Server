@@ -43,7 +43,6 @@ fn google_oauth(config: &State<Config>) -> Json<Response<Auth>> {
             url: google_auth.get_auth_url(),
         },
     )
-    .into()
 }
 
 #[get("/google?<code>")]

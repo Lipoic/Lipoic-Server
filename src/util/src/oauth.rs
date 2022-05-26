@@ -87,7 +87,7 @@ impl GoogleOAuth<'_> {
             .send()
             .await?;
 
-        Ok(response.json::<AccessTokenInfo>().await?)
+        response.json::<AccessTokenInfo>().await
     }
 }
 
