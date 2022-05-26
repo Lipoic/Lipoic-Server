@@ -58,5 +58,9 @@ services:
         JYML5AtPVgX2160tt2NRqWr81u1IlMt9MGG8XnzVKMaUtbfBdn11SZoufVMuhLIu
         of0n2pq5ef+j6b8waGHYBj1feqWodi5RY4d/BKDbO3aWpiOqizE=
         -----END RSA PRIVATE KEY-----
+      # you google OAuth app id
+      ROCKET_GOOGLE_OAUTH_ID: ""
+      # you google OAuth app secret
+      ROCKET_GOOGLE_OAUTH_SECRET: ""
     depends_on:
       - mongo
