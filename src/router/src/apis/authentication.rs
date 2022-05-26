@@ -26,6 +26,7 @@ impl<'r> FromRequest<'r> for RequestIp {
     }
 }
 
+/// response google OAuth2 url
 #[get("/google")]
 fn google_oauth(config: &State<Config>) -> Json<Response<Auth>> {
     let google_auth = GoogleOAuth::new(
