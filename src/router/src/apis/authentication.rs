@@ -2,7 +2,7 @@ use crate::data::auth_data::{Auth, Token};
 use crate::data::error_code::Code;
 use crate::resource::Response;
 use crate::Config;
-use database::model::auth::user::{ConnectAccount, ConnectType, User};
+use database::model::auth::user::{ConnectAccount, ConnectType, User, UserMode};
 use database::mongodb::bson;
 use database::mongodb::options::FindOneAndUpdateOptions;
 use database::DB;
@@ -95,6 +95,7 @@ async fn google_oauth_code(
                     name: login_user_info.name.clone(),
                     email: login_user_info.email.clone(),
                 }),
+                vec![]
             )
             .await
             .unwrap();
@@ -127,10 +128,12 @@ async fn create_and_update_user_info(
     email: String,
     ip: String,
     connect: Option<ConnectAccount>,
+    modes: Vec<UserMode>
 ) -> Result<User, Error> {
     let mut option = FindOneAndUpdateOptions::default();
     option.upsert = Some(true);
 
+    // insert user info if not exists
     let user_data = user
         .find_one_and_update(
             doc! { "email": &email },
@@ -138,7 +141,7 @@ async fn create_and_update_user_info(
                 "$setOnInsert": {
                     "username": &username,
                     "email": &email,
-                    "modes": [],
+                    "modes": ["Student"],
                     "login_ips": [],
                     "password_hash": null,
                     "connect": []
@@ -158,12 +161,15 @@ async fn create_and_update_user_info(
             .unwrap(),
         );
 
+    // add login ip and modes
     user.update_one(
         doc! { "email": &email },
         doc! {
             "$addToSet": {
                 "login_ips": ip,
-                "modes": "Student",
+                "modes": {
+                    "$each": bson::to_bson(&modes).unwrap()
+                },
             }
         },
         None,
