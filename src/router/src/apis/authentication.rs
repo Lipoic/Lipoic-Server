@@ -189,7 +189,7 @@ async fn login(
             Status::Unauthorized,
             Response::data(
                 Code::PasswordError,
-                Some(String::from("password error")),
+                Some(String::from("Input password error")),
                 None,
             ),
         ))
