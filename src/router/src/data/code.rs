@@ -9,6 +9,10 @@ pub enum Code {
     OAuthCodeError,
     /// OAuth get user info error
     OAuthGetUserInfoError,
+    /// User not found error
+    UserNotFound,
+    /// Input password error
+    PasswordError,
 }
 
 impl Code {
@@ -18,6 +22,8 @@ impl Code {
             NotFound => 2,
             OAuthCodeError => 3,
             OAuthGetUserInfoError => 4,
+            UserNotFound => 5,
+            PasswordError => 6,
         }
     }
 }

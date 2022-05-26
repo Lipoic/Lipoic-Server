@@ -11,3 +11,9 @@ pub struct Auth {
 pub struct Token {
     pub(crate) token: String,
 }
+
+#[derive(FromForm)]
+pub struct LoginFromData {
+    pub(crate) password: String,
+    pub(crate) email: String,
+}

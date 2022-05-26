@@ -44,6 +44,6 @@ EQIDAQAB
 """
 # google OAuth2 information
 google_oauth_id="887062293022-d8pted10o8hpua63rd1m8vgq456vl8k5.apps.googleusercontent.com"
-google_oauth_secret="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"
+google_oauth_secret="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"
 
 issuer="http://127.0.0.1:8000"

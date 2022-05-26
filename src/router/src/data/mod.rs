@@ -1,3 +1,3 @@
 pub mod auth_data;
-pub mod error_code;
+pub mod code;
 pub mod response;

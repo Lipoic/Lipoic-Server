@@ -1,5 +1,5 @@
-use crate::data::auth_data::{Auth, Token};
-use crate::data::error_code::Code;
+use crate::data::auth_data::{Auth, LoginFromData, Token};
+use crate::data::code::Code;
 use crate::resource::Response;
 use crate::Config;
 use database::model::auth::user::{ConnectAccount, ConnectType, User, UserMode};
@@ -8,6 +8,8 @@ use database::mongodb::options::FindOneAndUpdateOptions;
 use database::DB;
 use database::{doc, Collection, Error};
 use rocket::fairing::AdHoc;
+use rocket::form::Form;
+use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome};
 use rocket::response::status::BadRequest;
 use rocket::serde::json::Json;
@@ -41,9 +43,9 @@ fn google_oauth(redirect_uri: &str, config: &State<Config>) -> Json<Response<Aut
     Response::data(
         Code::Ok,
         None,
-        Auth {
+        Some(Auth {
             url: google_auth.get_auth_url(),
-        },
+        }),
     )
 }
 
@@ -75,15 +77,9 @@ async fn google_oauth_code(
                 return Err(BadRequest(Some(Response::data(
                     Code::OAuthGetUserInfoError,
                     Some(String::from("Invalid OAuth token.")),
-                    String::new(),
+                    None,
                 ))));
             };
-            // Expiration time: 1 weak
-            let exp = SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .expect("Time went backwards")
-                .as_secs()
-                + 60 * 60 * 24 * 7;
 
             let user_data = create_and_update_user_info(
                 db.user.as_ref().unwrap(),
@@ -95,7 +91,7 @@ async fn google_oauth_code(
                     name: login_user_info.name.clone(),
                     email: login_user_info.email.clone(),
                 }),
-                vec![]
+                vec![],
             )
             .await
             .unwrap();
@@ -103,21 +99,100 @@ async fn google_oauth_code(
             let token = create_jwt_token(
                 config.private_key.as_bytes(),
                 Claims {
-                    exp: exp as usize,
+                    exp: create_exp(),
                     email: login_user_info.email,
                     username: login_user_info.name,
-                    id: user_data._id.to_hex(),
+                    id: user_data._id.to_string(),
                 },
             )
             .unwrap();
 
-            Ok(Response::data(Code::Ok, None, Token { token }))
+            Ok(Response::data(Code::Ok, None, Some(Token { token })))
         }
         Err(_) => Err(BadRequest(Some(Response::data(
             Code::OAuthCodeError,
             Some(String::from("Invalid code.")),
-            String::new(),
+            None,
         )))),
+    }
+}
+
+/// User login API
+/// # Response
+/// ## Response Code
+/// * [Code::UserNotFound]
+/// * [Code::PasswordError] - Input password error.
+/// ## Response Content
+/// * [Token] - A JWT token.
+#[post("/user/login", data = "<login_info>")]
+async fn login(
+    login_info: Form<LoginFromData>,
+    db: &State<DB>,
+    config: &State<Config>,
+) -> Result<Json<Response<Token>>, (Status, Json<Response<String>>)> {
+    let find_user = if let Some(user_data) = db
+        .user
+        .as_ref()
+        .unwrap()
+        .find_one(
+            doc! {
+                "email": &login_info.email,
+            },
+            None,
+        )
+        .await
+        .unwrap()
+    {
+        user_data
+    } else {
+        // Response user not found.
+        return Err((
+            Status::Unauthorized,
+            Response::data(
+                Code::UserNotFound,
+                Some(format!("{} user not found", login_info.email)),
+                None,
+            ),
+        ));
+    };
+
+    if let Some(password_hash) = find_user.password_hash {
+        // verify password correctness
+        if util::bcrypt::verify_password(password_hash, login_info.password.clone()).unwrap() {
+            let token = create_jwt_token(
+                &config.private_key.as_bytes(),
+                Claims {
+                    exp: create_exp(),
+                    email: find_user.email,
+                    username: find_user.username,
+                    id: find_user._id.to_string(),
+                },
+            )
+            .unwrap();
+
+            // Response JWT.
+            Ok(Response::data(Code::Ok, None, Some(Token { token })))
+        } else {
+            // Response input password error.
+            Err((
+                Status::Unauthorized,
+                Response::data(
+                    Code::PasswordError,
+                    Some(String::from("Input password error")),
+                    None,
+                ),
+            ))
+        }
+    } else {
+        // Response input password error.
+        Err((
+            Status::Unauthorized,
+            Response::data(
+                Code::PasswordError,
+                Some(String::from("password error")),
+                None,
+            ),
+        ))
     }
 }
 
@@ -128,7 +203,7 @@ async fn create_and_update_user_info(
     email: String,
     ip: String,
     connect: Option<ConnectAccount>,
-    modes: Vec<UserMode>
+    modes: Vec<UserMode>,
 ) -> Result<User, Error> {
     let mut option = FindOneAndUpdateOptions::default();
     option.upsert = Some(true);
@@ -185,17 +260,29 @@ async fn create_and_update_user_info(
                 }
             },
             None,
-        ).await?;
+        )
+        .await?;
     }
 
     Ok(user_data)
 }
 
+/// Expiration time: 1 weak
+fn create_exp() -> usize {
+    (SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("Time went backwards")
+        .as_secs()
+        + 60 * 60 * 24 * 7) as usize
+}
+
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load authentication stage", |rocket| async {
-        rocket.mount(
-            "/api/authentication",
-            routes![google_oauth, google_oauth_code],
-        )
+        rocket
+            .mount(
+                "/api/authentication",
+                routes![google_oauth, google_oauth_code],
+            )
+            .mount("/api", routes![login])
     })
 }
