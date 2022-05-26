@@ -20,11 +20,11 @@ macro_rules! generate_code {
 #[derive(Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
 pub struct Code {
-    pub (crate) code: usize
+    pub(crate) code: usize,
 }
 
 impl Code {
-    generate_code!{
+    generate_code! {
         Ok => 1, "Ok.",
         NotFound => 2, "Not found resource.",
         OAuthCodeError => 3, "OAuth auth code error.",
