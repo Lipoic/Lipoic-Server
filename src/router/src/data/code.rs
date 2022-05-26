@@ -1,29 +1,28 @@
-use self::Code::*;
+use rocket::serde::Serialize;
 
-#[derive(Debug)]
-pub enum Code {
-    Ok,
-    /// not found resource
-    NotFound,
-    /// OAuth auth code error
-    OAuthCodeError,
-    /// OAuth get user info error
-    OAuthGetUserInfoError,
-    /// User not found error
-    UserNotFound,
-    /// Input password error
-    PasswordError,
+macro_rules! generate_code {
+    ($($name:ident => $code:expr, $doc:expr),+) => {
+        $(
+            #[doc=$doc]
+            #[allow(non_upper_case_globals)]
+            pub const $name: Code = Code { code: $code };
+        )+
+    }
+}
+
+#[derive(Serialize, Debug)]
+#[serde(crate = "rocket::serde")]
+pub struct Code {
+    pub (crate) code: usize
 }
 
 impl Code {
-    pub fn get_code(&self) -> usize {
-        match self {
-            Ok => 1,
-            NotFound => 2,
-            OAuthCodeError => 3,
-            OAuthGetUserInfoError => 4,
-            UserNotFound => 5,
-            PasswordError => 6,
-        }
+    generate_code!{
+        Ok => 1, "Ok.",
+        NotFound => 2, "Not found resource.",
+        OAuthCodeError => 3, "OAuth auth code error.",
+        OAuthGetUserInfoError => 4, "OAuth get user info error.",
+        UserNotFound => 5, "User not found error.",
+        PasswordError => 6, "Input password error."
     }
 }
