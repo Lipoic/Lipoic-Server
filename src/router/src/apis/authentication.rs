@@ -15,6 +15,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use util::jwt::{create_jwt_token, Claims};
 use util::oauth::GoogleOAuth;
 
+/// Request Client IP Address
 struct RequestIp(String);
 
 #[rocket::async_trait]
@@ -27,13 +28,13 @@ impl<'r> FromRequest<'r> for RequestIp {
 }
 
 /// response google OAuth2 url
-#[get("/google")]
-fn google_oauth(config: &State<Config>) -> Json<Response<Auth>> {
+#[get("/google/url?<redirect_uri>")]
+fn google_oauth(redirect_uri: &str, config: &State<Config>) -> Json<Response<Auth>> {
     let google_auth = GoogleOAuth::new(
         config.google_oauth_secret.clone(),
         config.google_oauth_id.clone(),
         config.issuer.clone(),
-        "/authentication/google",
+        redirect_uri,
     );
 
     Response::data(
@@ -151,6 +152,7 @@ async fn create_and_update_user_info(
 
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load authentication stage", |rocket| async {
-        rocket.mount("/authentication", routes![google_oauth, google_oauth_code])
+        rocket
+            .mount("/authentication", routes![google_oauth, google_oauth_code])
     })
 }
