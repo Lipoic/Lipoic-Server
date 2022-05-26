@@ -1,5 +1,6 @@
 pub mod model;
 
+pub use mongodb;
 pub use mongodb::bson::doc;
 pub use mongodb::error::Error;
 pub use mongodb::Collection;

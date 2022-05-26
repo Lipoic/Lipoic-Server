@@ -1,21 +1,22 @@
+use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
-    pub id: String,
+    pub _id: ObjectId,
     pub username: String,
     pub email: String,
     pub password_hash: Option<String>,
-    pub integration: UserIntegration,
+    pub integration: Vec<UserIntegration>,
     pub modes: Vec<UserMode>,
     pub login_ips: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct UserIntegration {
-    pub google: bool,
-    pub facebook: bool,
-    pub taiwan_cloud_education: bool,
+pub enum UserIntegration {
+    Google,
+    Facebook,
+    TaiwanCloudEducation,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

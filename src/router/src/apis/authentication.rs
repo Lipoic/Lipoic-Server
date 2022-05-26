@@ -2,7 +2,8 @@ use crate::data::auth_data::{Auth, Token};
 use crate::data::error_code::Code;
 use crate::resource::Response;
 use crate::Config;
-use database::model::auth::user::{User, UserIntegration, UserMode};
+use database::model::auth::user::{User};
+use database::mongodb::options::FindOneAndUpdateOptions;
 use database::DB;
 use database::{doc, Collection, Error};
 use rocket::fairing::AdHoc;
@@ -13,7 +14,6 @@ use rocket::{Request, State};
 use std::time::{SystemTime, UNIX_EPOCH};
 use util::jwt::{create_jwt_token, Claims};
 use util::oauth::GoogleOAuth;
-use uuid::Uuid;
 
 struct RequestIp(String);
 
@@ -112,43 +112,35 @@ async fn create_and_update_user_info(
     email: String,
     ip: String,
 ) -> Result<(), Error> {
-    let cursor = user.find_one(doc! { "email": &email }, None).await?;
+    let mut option = FindOneAndUpdateOptions::default();
+    option.upsert = Some(true);
 
-    if let None = cursor {
-        // first login
-        // create user basic info
-        let uuid = Uuid::new_v4();
+    let a = user.find_one_and_update(
+        doc! { "email": &email },
+        doc! {
+            "$setOnInsert": {
+                "username": &username,
+                "email": &email,
+                "modes": [],
+                "login_ips": [],
+                "password_hash": null,
+                "integration": []
+            }
+        },
+        option,
+    ).await?;
 
-        user.insert_one(
-            User {
-                id: uuid.to_string(),
-                username,
-                email,
-                password_hash: None,
-                integration: UserIntegration {
-                    google: true,
-                    facebook: false,
-                    taiwan_cloud_education: false,
-                },
-                modes: vec![UserMode::Student],
-                login_ips: vec![ip],
-            },
-            None,
-        )
-        .await?;
-    } else {
-        // update user info
-        user.find_one_and_update(
-            doc! { "email": email },
-            doc! {
-                "$set": {
-                    "username": username
-                }
-            },
-            None,
-        )
-        .await?;
-    }
+    user.find_one_and_update(
+        doc! { "email": &email },
+        doc! {
+            "$addToSet": {
+                "login_ips": ip,
+                "modes": "Student"
+            }
+        },
+        None
+    ).await?;
+
 
     Ok(())
 }

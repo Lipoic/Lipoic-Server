@@ -1,8 +1,8 @@
-use std::path::PathBuf;
 use rocket::fairing::AdHoc;
 use rocket::fs::NamedFile;
 use rocket::response::status::NotFound;
 use rocket::Request;
+use std::path::PathBuf;
 
 #[catch(404)]
 async fn not_found(_: &Request<'_>) -> NotFound<Option<NamedFile>> {
