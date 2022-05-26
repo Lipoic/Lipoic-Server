@@ -97,7 +97,7 @@ async fn google_oauth_code(
             )
             .unwrap();
 
-            Ok(Response::data(Code::Ok, None, Token { token }).into())
+            Ok(Response::data(Code::Ok, None, Token { token }))
         }
         Err(_) => Err(BadRequest(Some(Response::data(
             Code::OAuthCodeError,
