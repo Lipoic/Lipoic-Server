@@ -52,7 +52,7 @@ fn create_jwt_token_test() {
             exp: exp as usize,
             email: "".to_string(),
             username: "".to_string(),
-            id: "".to_string()
+            id: "".to_string(),
         },
     )
     .unwrap();

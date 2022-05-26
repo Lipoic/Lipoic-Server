@@ -2,7 +2,7 @@ use crate::data::auth_data::{Auth, Token};
 use crate::data::error_code::Code;
 use crate::resource::Response;
 use crate::Config;
-use database::model::auth::user::{User};
+use database::model::auth::user::User;
 use database::mongodb::options::FindOneAndUpdateOptions;
 use database::DB;
 use database::{doc, Collection, Error};
@@ -93,7 +93,7 @@ async fn google_oauth_code(
                     exp: exp as usize,
                     email: login_user_info.email,
                     username: login_user_info.name,
-                    id: user_data._id.to_hex()
+                    id: user_data._id.to_hex(),
                 },
             )
             .unwrap();
@@ -117,20 +117,23 @@ async fn create_and_update_user_info(
     let mut option = FindOneAndUpdateOptions::default();
     option.upsert = Some(true);
 
-    let user_data = user.find_one_and_update(
-        doc! { "email": &email },
-        doc! {
-            "$setOnInsert": {
-                "username": &username,
-                "email": &email,
-                "modes": [],
-                "login_ips": [],
-                "password_hash": null,
-                "integration": []
-            }
-        },
-        option,
-    ).await?.unwrap();
+    let user_data = user
+        .find_one_and_update(
+            doc! { "email": &email },
+            doc! {
+                "$setOnInsert": {
+                    "username": &username,
+                    "email": &email,
+                    "modes": [],
+                    "login_ips": [],
+                    "password_hash": null,
+                    "integration": []
+                }
+            },
+            option,
+        )
+        .await?
+        .unwrap();
 
     user.find_one_and_update(
         doc! { "email": &email },
@@ -140,8 +143,9 @@ async fn create_and_update_user_info(
                 "modes": "Student"
             }
         },
-        None
-    ).await?;
+        None,
+    )
+    .await?;
 
     Ok(user_data)
 }
