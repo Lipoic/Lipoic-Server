@@ -1,5 +1,12 @@
 use rocket::serde::Serialize;
 
+/// # Example
+/// ```
+///generate_code! {
+///    Ok => 1, "Ok.",
+///    NotFound => 2, "Not found resource."
+///}
+/// ```
 macro_rules! generate_code {
     ($($name:ident => $code:expr, $doc:expr),+) => {
         $(
