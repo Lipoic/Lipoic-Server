@@ -11,6 +11,7 @@ pub struct Claims {
     pub exp: usize,
     pub email: String,
     pub username: String,
+    pub id: String,
 }
 
 /// create a new JWT token

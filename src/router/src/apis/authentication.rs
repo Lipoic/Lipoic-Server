@@ -77,7 +77,7 @@ async fn google_oauth_code(
                 .as_secs()
                 + 60 * 60 * 24 * 7;
 
-            create_and_update_user_info(
+            let user_data = create_and_update_user_info(
                 db.user.as_ref().unwrap(),
                 login_user_info.name.clone(),
                 login_user_info.email.clone(),
@@ -92,6 +92,7 @@ async fn google_oauth_code(
                     exp: exp as usize,
                     email: login_user_info.email,
                     username: login_user_info.name,
+                    id: user_data._id.to_hex()
                 },
             )
             .unwrap();
@@ -111,11 +112,11 @@ async fn create_and_update_user_info(
     username: String,
     email: String,
     ip: String,
-) -> Result<(), Error> {
+) -> Result<User, Error> {
     let mut option = FindOneAndUpdateOptions::default();
     option.upsert = Some(true);
 
-    user.find_one_and_update(
+    let user_data = user.find_one_and_update(
         doc! { "email": &email },
         doc! {
             "$setOnInsert": {
@@ -128,7 +129,7 @@ async fn create_and_update_user_info(
             }
         },
         option,
-    ).await?;
+    ).await?.unwrap();
 
     user.find_one_and_update(
         doc! { "email": &email },
@@ -141,7 +142,7 @@ async fn create_and_update_user_info(
         None
     ).await?;
 
-    Ok(())
+    Ok(user_data)
 }
 
 pub fn stage() -> AdHoc {

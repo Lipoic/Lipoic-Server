@@ -43,7 +43,7 @@ EQIDAQAB
 -----END PUBLIC KEY-----
 """
 # google OAuth2 information
-google_oauth_id=""
-google_oauth_secret=""
+google_oauth_id="887062293022-d8pted10o8hpua63rd1m8vgq456vl8k5.apps.googleusercontent.com"
+google_oauth_secret="hAuZ6CTBHJZwwq3xlcnZv7vq"
 
 issuer="http://127.0.0.1:8000"
