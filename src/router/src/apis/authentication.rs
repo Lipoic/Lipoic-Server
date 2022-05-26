@@ -160,7 +160,7 @@ async fn login(
         // verify password correctness
         if util::bcrypt::verify_password(password_hash, login_info.password.clone()).unwrap() {
             let token = create_jwt_token(
-                &config.private_key.as_bytes(),
+                config.private_key.as_bytes(),
                 Claims {
                     exp: create_exp(),
                     email: find_user.email,
