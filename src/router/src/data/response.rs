@@ -18,7 +18,7 @@ impl<T: rocket::serde::Serialize> Serialize for Response<T> {
     {
         let mut state = serializer.serialize_struct("response", 3)?;
 
-        state.serialize_field("code", &self.code)?;
+        state.serialize_field("code", &self.code.code)?;
 
         self.error_message
             .as_ref()
