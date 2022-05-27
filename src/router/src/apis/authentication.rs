@@ -14,9 +14,9 @@ use rocket::request::{FromRequest, Outcome};
 use rocket::response::status::BadRequest;
 use rocket::serde::json::Json;
 use rocket::{Request, State};
-use std::time::{SystemTime, UNIX_EPOCH};
 use util::jwt::{create_jwt_token, Claims};
 use util::oauth::GoogleOAuth;
+use util::util::create_exp;
 
 /// Request Client IP Address
 struct RequestIp(String);
@@ -100,11 +100,11 @@ async fn google_oauth_code(
             let token = create_jwt_token(
                 config.private_key.as_bytes(),
                 Claims {
-                    exp: create_exp(),
+                    exp: create_exp(60 * 60 * 24 * 7),
                     email: login_user_info.email,
                     username: login_user_info.name,
                     id: user_data._id.to_string(),
-                    verified_email: login_user_info.verified_email
+                    verified_email: login_user_info.verified_email,
                 },
             )
             .unwrap();
@@ -164,11 +164,11 @@ async fn login(
             let token = create_jwt_token(
                 config.private_key.as_bytes(),
                 Claims {
-                    exp: create_exp(),
+                    exp: create_exp(60 * 60 * 24 * 7),
                     email: find_user.email,
                     username: find_user.username,
                     id: find_user._id.to_string(),
-                    verified_email: find_user.verified_email
+                    verified_email: find_user.verified_email,
                 },
             )
             .unwrap();
@@ -198,6 +198,15 @@ async fn login(
         ))
     }
 }
+
+// #[post("/user/sign-up", data = "<sign-up>")]
+// async fn sign_up(
+//     sign_up: Form<LoginFromData>,
+//     db: &State<DB>,
+//     config: &State<Config>,
+// ) {
+//
+// }
 
 /// Update user info if it exists else insert
 async fn create_and_update_user_info(
@@ -270,15 +279,6 @@ async fn create_and_update_user_info(
     }
 
     Ok(user_data)
-}
-
-/// Expiration time: 1 weak
-fn create_exp() -> usize {
-    (SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("Time went backwards")
-        .as_secs()
-        + 60 * 60 * 24 * 7) as usize
 }
 
 pub fn stage() -> AdHoc {
