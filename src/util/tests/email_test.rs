@@ -1,4 +1,4 @@
-use util::email::{VerifyEmailClaims};
+use util::email::VerifyEmailClaims;
 use util::jwt::{create_jwt_token, verify_token};
 use util::util::create_exp;
 
@@ -52,7 +52,9 @@ fn verify_email_test() {
     )
     .unwrap();
 
-    let data = verify_token::<VerifyEmailClaims>(code, PUBLIC_KEY.as_bytes()).unwrap().claims;
+    let data = verify_token::<VerifyEmailClaims>(code, PUBLIC_KEY.as_bytes())
+        .unwrap()
+        .claims;
 
     assert_eq!(data.id.as_str(), "123");
 }
