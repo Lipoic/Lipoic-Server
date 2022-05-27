@@ -12,3 +12,7 @@ jsonwebtoken = "8"
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 bcrypt = "0.13"
+
+# email
+lettre = "0.10.0-rc.6"
+maud = "0.23.0"
