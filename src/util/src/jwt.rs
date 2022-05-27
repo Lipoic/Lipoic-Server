@@ -11,6 +11,7 @@ pub struct Claims {
     pub exp: usize,
     pub email: String,
     pub username: String,
+    pub verified_email: bool,
     pub id: String,
 }
 

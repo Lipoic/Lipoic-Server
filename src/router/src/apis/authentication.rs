@@ -85,6 +85,7 @@ async fn google_oauth_code(
                 db.user.as_ref().unwrap(),
                 login_user_info.name.clone(),
                 login_user_info.email.clone(),
+                login_user_info.verified_email.clone(),
                 request_ip.0,
                 Some(ConnectAccount {
                     account_type: ConnectType::Google,
@@ -103,6 +104,7 @@ async fn google_oauth_code(
                     email: login_user_info.email,
                     username: login_user_info.name,
                     id: user_data._id.to_string(),
+                    verified_email: login_user_info.verified_email
                 },
             )
             .unwrap();
@@ -166,6 +168,7 @@ async fn login(
                     email: find_user.email,
                     username: find_user.username,
                     id: find_user._id.to_string(),
+                    verified_email: find_user.verified_email
                 },
             )
             .unwrap();
@@ -201,6 +204,7 @@ async fn create_and_update_user_info(
     user: &Collection<User>,
     username: String,
     email: String,
+    verified_email: bool,
     ip: String,
     connect: Option<ConnectAccount>,
     modes: Vec<UserMode>,
@@ -216,6 +220,7 @@ async fn create_and_update_user_info(
                 "$setOnInsert": {
                     "username": &username,
                     "email": &email,
+                    "verified_email": verified_email,
                     "modes": ["Student"],
                     "login_ips": [],
                     "password_hash": null,

@@ -6,6 +6,7 @@ pub struct User {
     pub _id: ObjectId,
     pub username: String,
     pub email: String,
+    pub verified_email: bool,
     pub password_hash: Option<String>,
     pub connect: Vec<ConnectAccount>,
     pub modes: Vec<UserMode>,
