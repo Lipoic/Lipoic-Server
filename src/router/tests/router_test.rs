@@ -11,7 +11,7 @@ async fn hello_test() {
     assert_eq!(response.0.status(), Status::Ok);
     assert_eq!(
         response.0.into_string().await.unwrap(),
-        r#"{"code":1,"data":"hello world!"}"#
+        r#"{"code":1,"message":"Ok.","data":"hello world!"}"#
     )
 }
 
