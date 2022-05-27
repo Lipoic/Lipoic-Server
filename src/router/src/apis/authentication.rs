@@ -20,6 +20,13 @@ use util::jwt::{create_jwt_token, Claims};
 use util::oauth::GoogleOAuth;
 use util::util::create_exp;
 
+struct UserInfo {
+    username: String,
+    email: String,
+    verified_email: bool,
+    ip: String,
+}
+
 /// Request Client IP Address
 struct RequestIp(String);
 
@@ -83,10 +90,6 @@ async fn google_oauth_code<'a>(
 
             let user_data = create_and_update_user_info(
                 db.user.as_ref().unwrap(),
-                login_user_info.name.clone(),
-                login_user_info.email.clone(),
-                login_user_info.verified_email.clone(),
-                request_ip.0,
                 Some(ConnectAccount {
                     account_type: ConnectType::Google,
                     name: login_user_info.name.clone(),
@@ -94,6 +97,12 @@ async fn google_oauth_code<'a>(
                 }),
                 vec![],
                 None,
+                UserInfo {
+                    username: login_user_info.name.clone(),
+                    email: login_user_info.email.clone(),
+                    ip: request_ip.0,
+                    verified_email: login_user_info.verified_email
+                }
             )
             .await
             .unwrap()
@@ -210,13 +219,15 @@ async fn sign_up<'a>(
 
     let user_data = create_and_update_user_info(
         db.user.as_ref().unwrap(),
-        sign_up.username.clone(),
-        sign_up.email.clone(),
-        false,
-        request_ip.0,
         None,
         sign_up.modes.0.clone(),
         Some(password_hash),
+        UserInfo {
+            username: sign_up.username.clone(),
+            email: sign_up.email.clone(),
+            ip: request_ip.0,
+            verified_email: false
+        }
     )
     .await
     .unwrap();
@@ -255,13 +266,10 @@ async fn sign_up<'a>(
 /// Update user info if it exists else insert
 async fn create_and_update_user_info(
     user: &Collection<User>,
-    username: String,
-    email: String,
-    verified_email: bool,
-    ip: String,
     connect: Option<ConnectAccount>,
     modes: Vec<UserMode>,
     password_hash: Option<String>,
+    user_info: UserInfo,
 ) -> Result<Option<User>, Error> {
     let mut option = FindOneAndUpdateOptions::default();
     option.upsert = Some(true);
@@ -269,12 +277,12 @@ async fn create_and_update_user_info(
     // insert user info if not exists
     let user_data = user
         .find_one_and_update(
-            doc! { "email": &email },
+            doc! { "email": &user_info.email },
             doc! {
                 "$setOnInsert": {
-                    "username": &username,
-                    "email": &email,
-                    "verified_email": verified_email,
+                    "username": &user_info.username,
+                    "email": &user_info.email,
+                    "verified_email": &user_info.verified_email,
                     "modes": ["Student"],
                     "login_ips": [],
                     "password_hash": password_hash,
@@ -287,10 +295,10 @@ async fn create_and_update_user_info(
 
     // add login ip and modes
     user.update_one(
-        doc! { "email": &email },
+        doc! { "email": &user_info.email },
         doc! {
             "$addToSet": {
-                "login_ips": ip,
+                "login_ips": &user_info.ip,
                 "modes": {
                     "$each": bson::to_bson(&modes).unwrap()
                 },
@@ -302,7 +310,7 @@ async fn create_and_update_user_info(
 
     if let Some(connect) = connect {
         user.update_one(
-            doc! { "email": &email },
+            doc! { "email": &user_info.email },
             doc! {
                 "$addToSet": {
                     "connect": bson::to_bson(&connect).unwrap()
