@@ -12,7 +12,7 @@ pub struct VerifyEmailClaims {
     pub id: String,
 }
 
-pub fn verify_email(
+pub fn send_verify_email(
     username: String,
     password: String,
     issuer: String,
