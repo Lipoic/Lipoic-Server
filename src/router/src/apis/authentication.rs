@@ -1,4 +1,4 @@
-use crate::data::auth_data::{Auth, LoginFromData, Token};
+use crate::data::auth_data::{Auth, LoginFromData, SignUp, Token};
 use crate::data::code::Code;
 use crate::resource::Response;
 use crate::Config;
@@ -11,9 +11,10 @@ use rocket::fairing::AdHoc;
 use rocket::form::Form;
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome};
-use rocket::response::status::BadRequest;
+use rocket::response::status::{BadRequest, Conflict};
 use rocket::serde::json::Json;
 use rocket::{Request, State};
+use util::bcrypt::password_hash;
 use util::jwt::{create_jwt_token, Claims};
 use util::oauth::GoogleOAuth;
 use util::util::create_exp;
@@ -32,7 +33,7 @@ impl<'r> FromRequest<'r> for RequestIp {
 
 /// response google OAuth2 url
 #[get("/google/url?<redirect_uri>")]
-fn google_oauth(redirect_uri: &str, config: &State<Config>) -> Json<Response<Auth>> {
+fn google_oauth<'a>(redirect_uri: &'a str, config: &'a State<Config>) -> Json<Response<'a, Auth>> {
     let google_auth = GoogleOAuth::new(
         config.google_oauth_secret.clone(),
         config.google_oauth_id.clone(),
@@ -42,7 +43,6 @@ fn google_oauth(redirect_uri: &str, config: &State<Config>) -> Json<Response<Aut
 
     Response::data(
         Code::Ok,
-        None,
         Some(Auth {
             url: google_auth.get_auth_url(),
         }),
@@ -55,13 +55,13 @@ fn google_oauth(redirect_uri: &str, config: &State<Config>) -> Json<Response<Aut
 /// * `code` - A OAuth2 code
 /// * `oauth_redirect_uri` - A OAuth2 redirect uri
 #[get("/google?<code>&<oauth_redirect_uri>")]
-async fn google_oauth_code(
+async fn google_oauth_code<'a>(
     code: String,
-    oauth_redirect_uri: &str,
-    config: &State<Config>,
-    db: &State<DB>,
+    oauth_redirect_uri: &'a str,
+    config: &'a State<Config>,
+    db: &'a State<DB>,
     request_ip: RequestIp,
-) -> Result<Json<Response<Token>>, BadRequest<Json<Response<String>>>> {
+) -> Result<Json<Response<'a, Token>>, BadRequest<Json<Response<'a, String>>>> {
     let google_auth = GoogleOAuth::new(
         config.google_oauth_secret.clone(),
         config.google_oauth_id.clone(),
@@ -76,7 +76,6 @@ async fn google_oauth_code(
             } else {
                 return Err(BadRequest(Some(Response::data(
                     Code::OAuthGetUserInfoError,
-                    Some(String::from("Invalid OAuth token.")),
                     None,
                 ))));
             };
@@ -93,9 +92,24 @@ async fn google_oauth_code(
                     email: login_user_info.email.clone(),
                 }),
                 vec![],
+                None,
             )
             .await
-            .unwrap();
+            .unwrap()
+            .unwrap_or(
+                db.user
+                    .as_ref()
+                    .unwrap()
+                    .find_one(
+                        doc! {
+                            "email": &login_user_info.email
+                        },
+                        None,
+                    )
+                    .await
+                    .unwrap()
+                    .unwrap(),
+            );
 
             let token = create_jwt_token(
                 config.private_key.as_bytes(),
@@ -109,11 +123,11 @@ async fn google_oauth_code(
             )
             .unwrap();
 
-            Ok(Response::data(Code::Ok, None, Some(Token { token })))
+            // Response token.
+            Ok(Response::data(Code::Ok, Some(Token { token })))
         }
         Err(_) => Err(BadRequest(Some(Response::data(
             Code::OAuthCodeError,
-            Some(String::from("Invalid code.")),
             None,
         )))),
     }
@@ -122,16 +136,16 @@ async fn google_oauth_code(
 /// User login API
 /// # Response
 /// ## Response Code
-/// * [Code::UserNotFound]
+/// * [Code::LoginUserNotFoundError]
 /// * [Code::PasswordError] - Input password error.
 /// ## Response Content
 /// * [Token] - A JWT token.
 #[post("/user/login", data = "<login_info>")]
-async fn login(
+async fn login<'a>(
     login_info: Form<LoginFromData>,
-    db: &State<DB>,
-    config: &State<Config>,
-) -> Result<Json<Response<Token>>, (Status, Json<Response<String>>)> {
+    db: &'a State<DB>,
+    config: &'a State<Config>,
+) -> Result<Json<Response<'a, Token>>, (Status, Json<Response<'a, String>>)> {
     let find_user = if let Some(user_data) = db
         .user
         .as_ref()
@@ -151,8 +165,7 @@ async fn login(
         return Err((
             Status::Unauthorized,
             Response::data(
-                Code::UserNotFound,
-                Some(format!("{} user not found", login_info.email)),
+                Code::LoginUserNotFoundError,
                 None,
             ),
         ));
@@ -174,14 +187,13 @@ async fn login(
             .unwrap();
 
             // Response JWT.
-            Ok(Response::data(Code::Ok, None, Some(Token { token })))
+            Ok(Response::data(Code::Ok, Some(Token { token })))
         } else {
             // Response input password error.
             Err((
                 Status::Unauthorized,
                 Response::data(
-                    Code::PasswordError,
-                    Some(String::from("Input password error")),
+                    Code::LoginPasswordError,
                     None,
                 ),
             ))
@@ -191,22 +203,42 @@ async fn login(
         Err((
             Status::Unauthorized,
             Response::data(
-                Code::PasswordError,
-                Some(String::from("Input password error")),
+                Code::LoginPasswordError,
                 None,
             ),
         ))
     }
 }
 
-// #[post("/user/sign-up", data = "<sign-up>")]
-// async fn sign_up(
-//     sign_up: Form<LoginFromData>,
-//     db: &State<DB>,
-//     config: &State<Config>,
-// ) {
-//
-// }
+#[post("/user/sign-up", data = "<sign_up>")]
+async fn sign_up<'a>(sign_up: Form<SignUp>, db: &'a State<DB>, config: &'a State<Config>, request_ip: RequestIp) -> Result<Json<Response<'a, String>>, Conflict<Json<Response<'a, String>>>> {
+    let password_hash = password_hash(sign_up.password.clone()).unwrap();
+
+    let user_data = create_and_update_user_info(
+        db.user.as_ref().unwrap(),
+        sign_up.username.clone(),
+        sign_up.email.clone(),
+        false,
+        request_ip.0,
+        None,
+        sign_up.modes.0.clone(),
+        Some(password_hash)
+    ).await.unwrap();
+
+    if user_data.is_none() {
+        Ok(Response::data(
+            Code::Ok,
+            None
+        ))
+    } else {
+        Err(Conflict(Some(
+            Response::data(
+                Code::SignUpEmailAlreadyRegistered,
+                None,
+            )
+        )))
+    }
+}
 
 /// Update user info if it exists else insert
 async fn create_and_update_user_info(
@@ -217,7 +249,8 @@ async fn create_and_update_user_info(
     ip: String,
     connect: Option<ConnectAccount>,
     modes: Vec<UserMode>,
-) -> Result<User, Error> {
+    password_hash: Option<String>
+) -> Result<Option<User>, Error> {
     let mut option = FindOneAndUpdateOptions::default();
     option.upsert = Some(true);
 
@@ -232,23 +265,13 @@ async fn create_and_update_user_info(
                     "verified_email": verified_email,
                     "modes": ["Student"],
                     "login_ips": [],
-                    "password_hash": null,
+                    "password_hash": password_hash,
                     "connect": []
                 }
             },
             option,
         )
-        .await?
-        .unwrap_or(
-            user.find_one(
-                doc! {
-                    "email": &email
-                },
-                None,
-            )
-            .await?
-            .unwrap(),
-        );
+        .await?;
 
     // add login ip and modes
     user.update_one(
@@ -288,6 +311,6 @@ pub fn stage() -> AdHoc {
                 "/api/authentication",
                 routes![google_oauth, google_oauth_code],
             )
-            .mount("/api", routes![login])
+            .mount("/api", routes![login, sign_up])
     })
 }

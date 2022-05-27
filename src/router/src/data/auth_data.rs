@@ -1,3 +1,5 @@
+use rocket::serde::json::Json;
+use database::model::auth::user::UserMode;
 use rocket::serde::Serialize;
 
 #[derive(Serialize)]
@@ -16,4 +18,12 @@ pub struct Token {
 pub struct LoginFromData {
     pub(crate) password: String,
     pub(crate) email: String,
+}
+
+#[derive(FromForm)]
+pub struct SignUp {
+    pub(crate) username: String,
+    pub(crate) email: String,
+    pub(crate) password: String,
+    pub(crate) modes: Json<Vec<UserMode>>,
 }
