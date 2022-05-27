@@ -5,13 +5,12 @@ use rocket::serde::Serialize;
 use crate::data::code::Code;
 
 #[derive(Debug)]
-pub struct Response<T> {
-    pub code: Code,
-    pub error_message: Option<String>,
+pub struct Response<'a, T> {
+    pub code: Code<'a>,
     pub data: Option<T>,
 }
 
-impl<T: rocket::serde::Serialize> Serialize for Response<T> {
+impl<T: rocket::serde::Serialize> Serialize for Response<'_, T> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: rocket::serde::Serializer,
@@ -20,9 +19,8 @@ impl<T: rocket::serde::Serialize> Serialize for Response<T> {
 
         state.serialize_field("code", &self.code.code)?;
 
-        self.error_message
-            .as_ref()
-            .and_then(|v| state.serialize_field("error_message", &v).ok());
+        state.serialize_field("message", &self.code.message)?;
+
         self.data
             .as_ref()
             .and_then(|value| state.serialize_field("data", &value).ok());
@@ -31,10 +29,9 @@ impl<T: rocket::serde::Serialize> Serialize for Response<T> {
     }
 }
 
-impl<T> Response<T> {
-    pub fn data(code: Code, error_message: Option<String>, data: Option<T>) -> Json<Response<T>> {
+impl<T> Response<'_, T> {
+    pub fn data(code: Code, data: Option<T>) -> Json<Response<T>> {
         Response {
-            error_message,
             code,
             data,
         }
