@@ -46,7 +46,7 @@ EQIDAQAB
 google_oauth_id="887062293022-d8pted10o8hpua63rd1m8vgq456vl8k5.apps.googleusercontent.com"
 google_oauth_secret="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"
 # google email password and and mail address
-google_email=""
-google_app_password=""
+google_account_email=""
+google_account_password=""
 
 issuer="http://127.0.0.1:8000"

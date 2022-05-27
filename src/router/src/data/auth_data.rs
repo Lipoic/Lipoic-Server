@@ -1,5 +1,5 @@
-use rocket::serde::json::Json;
 use database::model::auth::user::UserMode;
+use rocket::serde::json::Json;
 use rocket::serde::Serialize;
 
 #[derive(Serialize)]

@@ -15,6 +15,7 @@ use rocket::response::status::{BadRequest, Conflict};
 use rocket::serde::json::Json;
 use rocket::{Request, State};
 use util::bcrypt::password_hash;
+use util::email::{send_verify_email, VerifyEmailClaims};
 use util::jwt::{create_jwt_token, Claims};
 use util::oauth::GoogleOAuth;
 use util::util::create_exp;
@@ -126,10 +127,7 @@ async fn google_oauth_code<'a>(
             // Response token.
             Ok(Response::data(Code::Ok, Some(Token { token })))
         }
-        Err(_) => Err(BadRequest(Some(Response::data(
-            Code::OAuthCodeError,
-            None,
-        )))),
+        Err(_) => Err(BadRequest(Some(Response::data(Code::OAuthCodeError, None)))),
     }
 }
 
@@ -164,10 +162,7 @@ async fn login<'a>(
         // Response user not found.
         return Err((
             Status::Unauthorized,
-            Response::data(
-                Code::LoginUserNotFoundError,
-                None,
-            ),
+            Response::data(Code::LoginUserNotFoundError, None),
         ));
     };
 
@@ -192,26 +187,25 @@ async fn login<'a>(
             // Response input password error.
             Err((
                 Status::Unauthorized,
-                Response::data(
-                    Code::LoginPasswordError,
-                    None,
-                ),
+                Response::data(Code::LoginPasswordError, None),
             ))
         }
     } else {
         // Response input password error.
         Err((
             Status::Unauthorized,
-            Response::data(
-                Code::LoginPasswordError,
-                None,
-            ),
+            Response::data(Code::LoginPasswordError, None),
         ))
     }
 }
 
 #[post("/user/sign-up", data = "<sign_up>")]
-async fn sign_up<'a>(sign_up: Form<SignUp>, db: &'a State<DB>, config: &'a State<Config>, request_ip: RequestIp) -> Result<Json<Response<'a, String>>, Conflict<Json<Response<'a, String>>>> {
+async fn sign_up<'a>(
+    sign_up: Form<SignUp>,
+    db: &'a State<DB>,
+    config: &'a State<Config>,
+    request_ip: RequestIp,
+) -> Result<Json<Response<'a, String>>, Conflict<Json<Response<'a, String>>>> {
     let password_hash = password_hash(sign_up.password.clone()).unwrap();
 
     let user_data = create_and_update_user_info(
@@ -222,21 +216,36 @@ async fn sign_up<'a>(sign_up: Form<SignUp>, db: &'a State<DB>, config: &'a State
         request_ip.0,
         None,
         sign_up.modes.0.clone(),
-        Some(password_hash)
-    ).await.unwrap();
+        Some(password_hash),
+    )
+    .await
+    .unwrap();
 
     if user_data.is_none() {
-        Ok(Response::data(
-            Code::Ok,
-            None
-        ))
+        let code = create_jwt_token(
+            config.private_key.as_bytes(),
+            VerifyEmailClaims {
+                exp: create_exp(60 * 10),
+                email: sign_up.email.clone(),
+            },
+        )
+        .unwrap();
+
+        send_verify_email(
+            config.google_account_email.clone(),
+            config.google_account_password.clone(),
+            config.issuer.clone(),
+            String::from(""),
+            code,
+            sign_up.email.clone(),
+        );
+
+        Ok(Response::data(Code::Ok, None))
     } else {
-        Err(Conflict(Some(
-            Response::data(
-                Code::SignUpEmailAlreadyRegistered,
-                None,
-            )
-        )))
+        Err(Conflict(Some(Response::data(
+            Code::SignUpEmailAlreadyRegistered,
+            None,
+        ))))
     }
 }
 
@@ -249,7 +258,7 @@ async fn create_and_update_user_info(
     ip: String,
     connect: Option<ConnectAccount>,
     modes: Vec<UserMode>,
-    password_hash: Option<String>
+    password_hash: Option<String>,
 ) -> Result<Option<User>, Error> {
     let mut option = FindOneAndUpdateOptions::default();
     option.upsert = Some(true);

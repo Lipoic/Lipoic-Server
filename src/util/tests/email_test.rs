@@ -47,7 +47,7 @@ fn verify_email_test() {
         PRIVATE_KEY.as_bytes(),
         VerifyEmailClaims {
             exp: create_exp(60 * 5),
-            id: "123".to_string(),
+            email: "123".to_string(),
         },
     )
     .unwrap();
@@ -56,5 +56,5 @@ fn verify_email_test() {
         .unwrap()
         .claims;
 
-    assert_eq!(data.id.as_str(), "123");
+    assert_eq!(data.email.as_str(), "123");
 }

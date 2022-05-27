@@ -20,6 +20,8 @@ pub struct Config {
     mongodb_url: String,
     google_oauth_id: String,
     google_oauth_secret: String,
+    google_account_email: String,
+    google_account_password: String,
     issuer: String,
 }
 

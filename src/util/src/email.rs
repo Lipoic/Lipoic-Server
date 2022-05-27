@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VerifyEmailClaims {
     pub exp: usize,
-    pub id: String,
+    pub email: String,
 }
 
 pub fn send_verify_email(

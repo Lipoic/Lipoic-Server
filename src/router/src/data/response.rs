@@ -31,10 +31,6 @@ impl<T: rocket::serde::Serialize> Serialize for Response<'_, T> {
 
 impl<T> Response<'_, T> {
     pub fn data(code: Code, data: Option<T>) -> Json<Response<T>> {
-        Response {
-            code,
-            data,
-        }
-        .into()
+        Response { code, data }.into()
     }
 }
