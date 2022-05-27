@@ -222,6 +222,7 @@ async fn sign_up<'a>(
     .unwrap();
 
     if user_data.is_none() {
+        // The verify email code.
         let code = create_jwt_token(
             config.private_key.as_bytes(),
             VerifyEmailClaims {
@@ -240,8 +241,10 @@ async fn sign_up<'a>(
             sign_up.email.clone(),
         );
 
+        // Response Ok.
         Ok(Response::data(Code::Ok, None))
     } else {
+        // Response email is already registered.
         Err(Conflict(Some(Response::data(
             Code::SignUpEmailAlreadyRegistered,
             None,
