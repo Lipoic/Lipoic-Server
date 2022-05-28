@@ -1,7 +1,3 @@
-use crate::data::auth_data::{Auth, LoginFromData, SignUp, Token};
-use crate::data::code::Code;
-use crate::resource::Response;
-use crate::Config;
 use database::model::auth::user::{ConnectAccount, ConnectType, User, UserMode};
 use database::mongodb::bson;
 use database::mongodb::options::FindOneAndUpdateOptions;
@@ -19,6 +15,11 @@ use util::email::{send_verify_email, VerifyEmailClaims};
 use util::jwt::{create_jwt_token, Claims};
 use util::oauth::GoogleOAuth;
 use util::util::create_exp;
+
+use crate::data::auth_data::{Auth, LoginFromData, SignUp, Token};
+use crate::data::code::Code;
+use crate::resource::Response;
+use crate::Config;
 
 struct UserInfo {
     username: String,
@@ -247,7 +248,7 @@ async fn sign_up<'a>(
             config.google_account_email.clone(),
             config.google_account_password.clone(),
             config.issuer.clone(),
-            String::from(""),
+            String::from("/verify-email"),
             code,
             sign_up.email.clone(),
         );

@@ -1,4 +1,5 @@
 mod authentication;
+mod verify_email;
 
 use rocket::fairing::AdHoc;
 

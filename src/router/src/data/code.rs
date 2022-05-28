@@ -32,6 +32,7 @@ impl Code<'_> {
         OAuthGetUserInfoError => 4, "OAuth get user info error.",
         LoginUserNotFoundError => 5, "User not found error.",
         LoginPasswordError => 6, "Input password error.",
-        SignUpEmailAlreadyRegistered => 7, "This email is already registered."
+        SignUpEmailAlreadyRegistered => 7, "This email is already registered.",
+        VerifyEmailError => 8, "This code is invalid."
     }
 }
