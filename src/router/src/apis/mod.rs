@@ -1,8 +1,10 @@
+/// Authenticate APIs
 mod authentication;
 mod verify_email;
 
 use rocket::fairing::AdHoc;
 
+#[doc(hidden)]
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load api stage", |rocket| async {
         rocket

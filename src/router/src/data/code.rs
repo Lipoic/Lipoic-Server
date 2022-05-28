@@ -27,7 +27,6 @@ pub struct Code<'a> {
 impl Code<'_> {
     generate_code! {
         Ok => 1, "Ok.",
-        NotFound => 2, "Not found resource.",
         OAuthCodeError => 3, "OAuth auth code error.",
         OAuthGetUserInfoError => 4, "OAuth get user info error.",
         LoginUserNotFoundError => 5, "User not found error.",

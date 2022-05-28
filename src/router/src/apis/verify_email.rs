@@ -1,5 +1,5 @@
 use crate::data::code::Code;
-use crate::resource::Response;
+use crate::data::response::Response;
 use crate::Config;
 use database::{doc, DB};
 use rocket::fairing::AdHoc;
@@ -43,6 +43,7 @@ async fn verify_email<'a>(
     }
 }
 
+#[doc(hidden)]
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load api stage", |rocket| async {
         rocket.mount("/", routes![verify_email])

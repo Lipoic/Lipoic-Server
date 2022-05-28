@@ -9,11 +9,13 @@ use rocket::{Build, Rocket};
 mod apis;
 mod catch;
 mod data;
+#[doc(hidden)]
 mod db;
 mod resource;
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
+#[doc(hidden)]
 pub struct Config {
     private_key: String,
     public_key: String,
@@ -26,6 +28,7 @@ pub struct Config {
 }
 
 /// rocket server
+#[doc(hidden)]
 pub async fn rocket(test: bool) -> Rocket<Build> {
     let rocket = rocket::build().attach(stage());
     let figment = rocket.figment();
@@ -44,6 +47,7 @@ pub async fn rocket(test: bool) -> Rocket<Build> {
     }
 }
 
+#[doc(hidden)]
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load router stage", |rocket| async {
         rocket

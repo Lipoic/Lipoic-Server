@@ -12,6 +12,7 @@ async fn not_found(_: &Request<'_>) -> NotFound<Option<NamedFile>> {
     NotFound(NamedFile::open(path).await.ok())
 }
 
+#[doc(hidden)]
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("catch stage", |rocket| async {
         rocket.register("/", catchers![not_found])

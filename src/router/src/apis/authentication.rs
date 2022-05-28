@@ -18,9 +18,10 @@ use util::util::create_exp;
 
 use crate::data::auth_data::{Auth, LoginFromData, SignUp, Token};
 use crate::data::code::Code;
-use crate::resource::Response;
+use crate::data::response::Response;
 use crate::Config;
 
+#[doc(hidden)]
 struct UserInfo {
     username: String,
     email: String,
@@ -29,9 +30,11 @@ struct UserInfo {
 }
 
 /// Request Client IP Address
+#[doc(hidden)]
 struct RequestIp(String);
 
 #[rocket::async_trait]
+#[doc(hidden)]
 impl<'r> FromRequest<'r> for RequestIp {
     type Error = ();
 
@@ -307,6 +310,7 @@ async fn sign_up<'a>(
 }
 
 /// Update user info if it exists else insert
+#[doc(hidden)]
 async fn create_and_update_user_info(
     user: &Collection<User>,
     connect: Option<ConnectAccount>,
@@ -367,6 +371,7 @@ async fn create_and_update_user_info(
     Ok(user_data)
 }
 
+#[doc(hidden)]
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load authentication stage", |rocket| async {
         rocket
