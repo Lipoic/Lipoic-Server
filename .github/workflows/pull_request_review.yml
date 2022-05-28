@@ -45,6 +45,8 @@ jobs:
           args: --no-deps -p router --document-private-items
       - name: Create index.html
         run: echo "<meta http-equiv=\"refresh\" content=\"0; url=router\">" > target/doc/index.html
+      - name: Create CNAME file
+        run: echo "api-docs.lipoic.org" > CNAME
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
