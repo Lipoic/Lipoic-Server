@@ -29,3 +29,23 @@ jobs:
         with:
           command: test
           toolchain: stable
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+      - name: Generator docs
+        uses: actions-rs/cargo@v1
+        with:
+          command: doc
+          toolchain: stable
+          args: --no-deps -p router --document-private-items
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        run: echo "<meta http-equiv=\"refresh\" content=\"0; url=router\">" > target/doc/index.html
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/doc
