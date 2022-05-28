@@ -42,6 +42,7 @@ impl<'r> FromRequest<'r> for RequestIp {
 
 /// # Get Google OAuth url
 /// ## Request
+/// - Path `/api/authentication/google/url`
 /// - Parameters
 ///     - `redirect_uri`
 /// ## Response
@@ -68,6 +69,7 @@ fn google_oauth<'a>(redirect_uri: &'a str, config: &'a State<Config>) -> Json<Re
 
 /// # Google OAuth2 login
 /// ## Request
+/// - Path `/api/authentication/google`
 /// - Parameters
 ///     - `code` - A OAuth2 code
 ///     - `oauth_redirect_uri` - A OAuth2 redirect uri
@@ -161,6 +163,7 @@ async fn google_oauth_code<'a>(
 
 /// # User login API
 /// ## Request
+/// - Path `/api/user/login`
 /// - FromData [LoginFromData]
 /// ## Response
 /// - Code
@@ -236,6 +239,7 @@ async fn login<'a>(
 
 /// # Sign up account API
 /// ## Request
+/// - Path `/api/user/sign-up`
 /// - FromData [SignUp]
 /// ## Response
 /// - Code
