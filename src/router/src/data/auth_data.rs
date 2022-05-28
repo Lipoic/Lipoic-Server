@@ -66,7 +66,7 @@ impl<'r> FromRequest<'r> for LoginUserData {
     async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
         let authorization = request.headers().get_one("Authorization");
         if let Some(token) = authorization {
-            let token_info = token.split(" ").collect::<Vec<&str>>();
+            let token_info = token.split(' ').collect::<Vec<&str>>();
             let token_type = token_info.get(0);
             let token_content = token_info.get(1);
             if let Some(_token_type @ &"Bearer") = token_type {
