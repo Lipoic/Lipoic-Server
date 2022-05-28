@@ -43,7 +43,8 @@ jobs:
           command: doc
           toolchain: stable
           args: --no-deps -p router --document-private-items
-      - run: echo "<meta http-equiv=\"refresh\" content=\"0; url=router\">" > target/doc/index.html
+      - name: Create index.html
+        run: echo "<meta http-equiv=\"refresh\" content=\"0; url=router\">" > target/doc/index.html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
