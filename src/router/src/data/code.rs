@@ -12,7 +12,7 @@ macro_rules! generate_code {
         $(
             #[doc=$message]
             #[allow(non_upper_case_globals)]
-            pub const $name: Code<'static> = Code { code: $code, message: $message};
+            pub const $name: Code<'static> = Code { code: $code, message: $message };
         )+
     }
 }

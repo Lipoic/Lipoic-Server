@@ -102,8 +102,8 @@ async fn google_oauth_code<'a>(
                     username: login_user_info.name.clone(),
                     email: login_user_info.email.clone(),
                     ip: request_ip.0,
-                    verified_email: login_user_info.verified_email
-                }
+                    verified_email: login_user_info.verified_email,
+                },
             )
             .await
             .unwrap()
@@ -227,8 +227,8 @@ async fn sign_up<'a>(
             username: sign_up.username.clone(),
             email: sign_up.email.clone(),
             ip: request_ip.0,
-            verified_email: false
-        }
+            verified_email: false,
+        },
     )
     .await
     .unwrap();
