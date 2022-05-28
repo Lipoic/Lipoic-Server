@@ -165,7 +165,7 @@ async fn google_oauth_code<'a>(
 /// ## Response
 /// - Code
 ///     - [Code::LoginUserNotFoundError]
-///     - [Code::PasswordError] - Input password error.
+///     - [Code::LoginPasswordError] - Input password error.
 ///     - [Code::Ok]
 /// - Content
 ///     - [Token] - A JWT token.
