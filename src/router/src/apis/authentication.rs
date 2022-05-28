@@ -45,6 +45,8 @@ impl<'r> FromRequest<'r> for RequestIp {
 /// - Parameters
 ///     - `redirect_uri`
 /// ## Response
+/// - Code
+///     - [Code::Ok]
 /// - Content
 ///     - [Auth] - A OAuth url
 #[get("/google/url?<redirect_uri>")]
@@ -164,6 +166,7 @@ async fn google_oauth_code<'a>(
 /// - Code
 ///     - [Code::LoginUserNotFoundError]
 ///     - [Code::PasswordError] - Input password error.
+///     - [Code::Ok]
 /// - Content
 ///     - [Token] - A JWT token.
 /// ## Curl Example
@@ -237,6 +240,7 @@ async fn login<'a>(
 /// ## Response
 /// - Code
 ///     - [Code::SignUpEmailAlreadyRegistered]
+///     - [Code::Ok]
 /// - Content
 ///     - [Code::Ok]
 /// ## Curl Example
