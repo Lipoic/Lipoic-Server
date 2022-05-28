@@ -11,7 +11,7 @@ use crate::Config;
 use crate::data::code::Code;
 
 #[get("/verify-email?<code>")]
-fn verify_email(code: String, config: &State<Config>, db: &State<DB>) -> Result<Redirect, Unauthorized<Json<Response<String>>>> {
+async fn verify_email<'a>(code: String, config: &'a State<Config>, db: &'a State<DB>) -> Result<Redirect, Unauthorized<Json<Response<'a, String>>>> {
     if let Ok(verify_user_data) = verify_token::<VerifyEmailClaims>(code, config.public_key.as_bytes()) {
         db.user.as_ref().unwrap().find_one_and_update(
             doc! { "email": &verify_user_data.claims.email },
@@ -21,7 +21,7 @@ fn verify_email(code: String, config: &State<Config>, db: &State<DB>) -> Result<
                 }
             },
             None,
-        );
+        ).await.unwrap();
 
         Ok(Redirect::to("/"))
     } else {
