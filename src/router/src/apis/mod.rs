@@ -1,6 +1,7 @@
 /// Authenticate APIs
 mod authentication;
 mod verify_email;
+mod user;
 
 use rocket::fairing::AdHoc;
 
@@ -10,5 +11,6 @@ pub fn stage() -> AdHoc {
         rocket
             .attach(authentication::stage())
             .attach(verify_email::stage())
+            .attach(user::stage())
     })
 }

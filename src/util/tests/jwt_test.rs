@@ -40,6 +40,15 @@ EQIDAQAB
 -----END PUBLIC KEY-----
 ";
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Claims {
+    /// Required (validate_exp defaults to true in validation). Expiration time (as UTC timestamp)
+    pub exp: usize,
+    pub username: String,
+    pub verified_email: bool,
+    pub id: String,
+}
+
 #[test]
 fn create_jwt_token_test() {
     let exp = SystemTime::now()
@@ -50,7 +59,6 @@ fn create_jwt_token_test() {
         PRIVATE_KEY.as_bytes(),
         Claims {
             exp: exp as usize,
-            email: "".to_string(),
             username: "".to_string(),
             verified_email: false,
             id: "".to_string(),

@@ -12,14 +12,15 @@ use rocket::serde::json::Json;
 use rocket::{Request, State};
 use util::bcrypt::password_hash;
 use util::email::{send_verify_email, VerifyEmailClaims};
-use util::jwt::{create_jwt_token, Claims};
+use util::jwt::{create_jwt_token};
 use util::oauth::GoogleOAuth;
 use util::util::create_exp;
 
-use crate::data::auth_data::{Auth, LoginFromData, SignUp, Token};
+use crate::data::auth_data::{AuthUrl, LoginFromData, SignUp, Token};
 use crate::data::code::Code;
 use crate::data::response::Response;
 use crate::Config;
+use crate::data::auth_data::Claims;
 
 #[doc(hidden)]
 struct UserInfo {
@@ -54,7 +55,7 @@ impl<'r> FromRequest<'r> for RequestIp {
 /// - Content
 ///     - [Auth] - A OAuth url
 #[get("/google/url?<redirect_uri>")]
-fn google_oauth<'a>(redirect_uri: &'a str, config: &'a State<Config>) -> Json<Response<'a, Auth>> {
+fn google_oauth<'a>(redirect_uri: &'a str, config: &'a State<Config>) -> Json<Response<'a, AuthUrl>> {
     let google_auth = GoogleOAuth::new(
         config.google_oauth_secret.clone(),
         config.google_oauth_id.clone(),
@@ -64,7 +65,7 @@ fn google_oauth<'a>(redirect_uri: &'a str, config: &'a State<Config>) -> Json<Re
 
     Response::data(
         Code::Ok,
-        Some(Auth {
+        Some(AuthUrl {
             url: google_auth.get_auth_url(),
         }),
     )
@@ -149,10 +150,10 @@ async fn google_oauth_code<'a>(
                 config.private_key.as_bytes(),
                 Claims {
                     exp: create_exp(60 * 60 * 24 * 7),
-                    email: login_user_info.email,
                     username: login_user_info.name,
                     id: user_data._id.to_string(),
                     verified_email: login_user_info.verified_email,
+                    modes: vec![UserMode::Student]
                 },
             )
             .unwrap();
@@ -214,10 +215,10 @@ async fn login<'a>(
                 config.private_key.as_bytes(),
                 Claims {
                     exp: create_exp(60 * 60 * 24 * 7),
-                    email: find_user.email,
                     username: find_user.username,
                     id: find_user._id.to_string(),
                     verified_email: find_user.verified_email,
+                    modes: find_user.modes
                 },
             )
             .unwrap();

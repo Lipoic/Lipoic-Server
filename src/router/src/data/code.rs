@@ -32,6 +32,7 @@ impl Code<'_> {
         LoginUserNotFoundError => 5, "User not found error.",
         LoginPasswordError => 6, "Input password error.",
         SignUpEmailAlreadyRegistered => 7, "This email is already registered.",
-        VerifyEmailError => 8, "This code is invalid."
+        VerifyEmailError => 8, "This code is invalid.",
+        AuthError => 9, "This token is invalid."
     }
 }

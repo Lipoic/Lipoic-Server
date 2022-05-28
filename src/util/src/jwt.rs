@@ -4,17 +4,7 @@ use jsonwebtoken::{
     decode, encode, Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation,
 };
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Claims {
-    /// Required (validate_exp defaults to true in validation). Expiration time (as UTC timestamp)
-    pub exp: usize,
-    pub email: String,
-    pub username: String,
-    pub verified_email: bool,
-    pub id: String,
-}
+use serde::{Serialize};
 
 /// create a new JWT token
 pub fn create_jwt_token<T: Serialize>(private_key: &[u8], claims: T) -> Result<String> {
