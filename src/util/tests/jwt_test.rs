@@ -1,5 +1,6 @@
 use std::time::{SystemTime, UNIX_EPOCH};
-use util::jwt::{create_jwt_token, verify_token, Claims};
+use util::jwt::{create_jwt_token, verify_token};
+use serde::{Deserialize, Serialize};
 
 const PRIVATE_KEY: &str = "-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEAu7GM38CWWJUdVtZzjukVN2VdIwTOiP1YMadzc3wI5K8cT98O
