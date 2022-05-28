@@ -58,6 +58,10 @@
 <span id="53">53</span>
 <span id="54">54</span>
 <span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
 </pre><pre class="rust"><code><span class="attribute">#[<span class="ident">macro_use</span>]</span>
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">rocket</span>;
 
@@ -69,11 +73,13 @@
 <span class="kw">mod</span> <span class="ident">apis</span>;
 <span class="kw">mod</span> <span class="ident">catch</span>;
 <span class="kw">mod</span> <span class="ident">data</span>;
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">mod</span> <span class="ident">db</span>;
 <span class="kw">mod</span> <span class="ident">resource</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="kw">crate</span> <span class="op">=</span> <span class="string">&quot;rocket::serde&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Config</span> {
     <span class="ident">private_key</span>: <span class="ident">String</span>,
     <span class="ident">public_key</span>: <span class="ident">String</span>,
@@ -86,6 +92,7 @@
 }
 
 <span class="doccomment">/// rocket server</span>
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">rocket</span>(<span class="ident">test</span>: <span class="ident">bool</span>) -&gt; <span class="ident">Rocket</span><span class="op">&lt;</span><span class="ident">Build</span><span class="op">&gt;</span> {
     <span class="kw">let</span> <span class="ident">rocket</span> <span class="op">=</span> <span class="ident">rocket::build</span>().<span class="ident">attach</span>(<span class="ident">stage</span>());
     <span class="kw">let</span> <span class="ident">figment</span> <span class="op">=</span> <span class="ident">rocket</span>.<span class="ident">figment</span>();
@@ -104,6 +111,7 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">stage</span>() -&gt; <span class="ident">AdHoc</span> {
     <span class="ident">AdHoc::on_ignite</span>(<span class="string">&quot;load router stage&quot;</span>, <span class="op">|</span><span class="ident">rocket</span><span class="op">|</span> <span class="kw">async</span> {
         <span class="ident">rocket</span>

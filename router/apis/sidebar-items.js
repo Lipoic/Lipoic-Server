@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["stage",""]],"mod":[["authentication",""],["verify_email",""]]});
+initSidebarItems({"mod":[["authentication","Authenticate APIs"],["verify_email",""]]});

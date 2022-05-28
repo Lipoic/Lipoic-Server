@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["stage",""],["verify_email",""]]});
+initSidebarItems({"fn":[["verify_email",""]]});

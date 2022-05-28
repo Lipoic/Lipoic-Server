@@ -18,8 +18,9 @@
 <span id="13">13</span>
 <span id="14">14</span>
 <span id="15">15</span>
+<span id="16">16</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::code::Code</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::response::Response</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::response::Response</span>;
 <span class="kw">use</span> <span class="ident">rocket::fairing::AdHoc</span>;
 <span class="kw">use</span> <span class="ident">rocket::serde::json::Json</span>;
 
@@ -28,6 +29,7 @@
     <span class="ident">Response::data</span>(<span class="ident">Code::Ok</span>, <span class="prelude-val">Some</span>(<span class="ident">String::from</span>(<span class="string">&quot;hello world!&quot;</span>)))
 }
 
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">stage</span>() -&gt; <span class="ident">AdHoc</span> {
     <span class="ident">AdHoc::on_ignite</span>(<span class="string">&quot;catch stage&quot;</span>, <span class="op">|</span><span class="ident">rocket</span><span class="op">|</span> <span class="kw">async</span> {
         <span class="ident">rocket</span>.<span class="ident">mount</span>(<span class="string">&quot;/&quot;</span>, <span class="macro">routes!</span>[<span class="ident">hello_world</span>])

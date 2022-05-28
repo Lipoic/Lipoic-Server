@@ -22,6 +22,7 @@
 <span id="17">17</span>
 <span id="18">18</span>
 <span id="19">19</span>
+<span id="20">20</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rocket::fairing::AdHoc</span>;
 <span class="kw">use</span> <span class="ident">rocket::fs::NamedFile</span>;
 <span class="kw">use</span> <span class="ident">rocket::response::status::NotFound</span>;
@@ -36,6 +37,7 @@
     <span class="ident">NotFound</span>(<span class="ident">NamedFile::open</span>(<span class="ident">path</span>).<span class="kw">await</span>.<span class="ident">ok</span>())
 }
 
+<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">stage</span>() -&gt; <span class="ident">AdHoc</span> {
     <span class="ident">AdHoc::on_ignite</span>(<span class="string">&quot;catch stage&quot;</span>, <span class="op">|</span><span class="ident">rocket</span><span class="op">|</span> <span class="kw">async</span> {
         <span class="ident">rocket</span>.<span class="ident">register</span>(<span class="string">&quot;/&quot;</span>, <span class="macro">catchers!</span>[<span class="ident">not_found</span>])

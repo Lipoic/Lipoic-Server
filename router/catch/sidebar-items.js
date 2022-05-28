@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["not_found",""],["stage",""]]});
+initSidebarItems({"fn":[["not_found",""]]});

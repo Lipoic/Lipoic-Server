@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["create_and_update_user_info","Update user info if it exists else insert"],["google_oauth","Get Google OAuth url"],["google_oauth_code","Google OAuth2 login"],["login","User login API"],["sign_up","Sign up account API"],["stage",""]],"struct":[["RequestIp","Request Client IP Address"],["UserInfo",""]]});
+initSidebarItems({"fn":[["google_oauth","Get Google OAuth url"],["google_oauth_code","Google OAuth2 login"],["login","User login API"],["sign_up","Sign up account API"]]});

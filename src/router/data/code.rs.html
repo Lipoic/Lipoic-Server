@@ -40,7 +40,6 @@
 <span id="35">35</span>
 <span id="36">36</span>
 <span id="37">37</span>
-<span id="38">38</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rocket::serde::Serialize</span>;
 
 <span class="doccomment">/// # Example</span>
@@ -70,7 +69,6 @@
 <span class="kw">impl</span> <span class="ident">Code</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
     <span class="macro">generate_code!</span> {
         <span class="prelude-val">Ok</span> =&gt; <span class="number">1</span>, <span class="string">&quot;Ok.&quot;</span>,
-        <span class="ident">NotFound</span> =&gt; <span class="number">2</span>, <span class="string">&quot;Not found resource.&quot;</span>,
         <span class="ident">OAuthCodeError</span> =&gt; <span class="number">3</span>, <span class="string">&quot;OAuth auth code error.&quot;</span>,
         <span class="ident">OAuthGetUserInfoError</span> =&gt; <span class="number">4</span>, <span class="string">&quot;OAuth get user info error.&quot;</span>,
         <span class="ident">LoginUserNotFoundError</span> =&gt; <span class="number">5</span>, <span class="string">&quot;User not found error.&quot;</span>,
