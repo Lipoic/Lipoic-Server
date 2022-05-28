@@ -29,3 +29,18 @@ async fn not_found_test() {
         include_str!("../../../resources/404.html")
     );
 }
+
+#[rocket::async_test]
+async fn google_oauth_url() {
+    let client = Client::tracked(router::rocket(true).await)
+        .await
+        .expect("valid rocket instance");
+    let req = client.get("/api/authentication/google/url?redirect_uri=/api/authentication/google");
+    let response = rocket::tokio::join!(req.clone().dispatch());
+
+    assert_eq!(response.0.status(), Status::Ok);
+    assert_eq!(
+        response.0.into_string().await.unwrap(),
+        r#"{"code":1,"message":"Ok.","data":{"url":"https://accounts.google.com/o/oauth2/auth?client_id=887062293022-d8pted10o8hpua63rd1m8vgq456vl8k5.apps.googleusercontent.com&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fauthentication%2Fgoogle"}}"#
+    );
+}
