@@ -40,7 +40,13 @@ impl<'r> FromRequest<'r> for RequestIp {
     }
 }
 
-/// response google OAuth2 url
+/// # Get Google OAuth url
+/// ## Request
+/// - Parameters
+///     - `redirect_uri`
+/// ## Response
+/// - Content
+///     - [Auth] - A OAuth url
 #[get("/google/url?<redirect_uri>")]
 fn google_oauth<'a>(redirect_uri: &'a str, config: &'a State<Config>) -> Json<Response<'a, Auth>> {
     let google_auth = GoogleOAuth::new(
@@ -58,11 +64,21 @@ fn google_oauth<'a>(redirect_uri: &'a str, config: &'a State<Config>) -> Json<Re
     )
 }
 
-/// Response data [Token]
-///
-/// # Parameters
-/// * `code` - A OAuth2 code
-/// * `oauth_redirect_uri` - A OAuth2 redirect uri
+/// # Google OAuth2 login
+/// ## Request
+/// - Parameters
+///     - `code` - A OAuth2 code
+///     - `oauth_redirect_uri` - A OAuth2 redirect uri
+/// ## Response
+/// - Response Code
+///     - [Code::Ok]
+///     - [Code::OAuthCodeError]
+/// - Response Content
+///     - [Token] - A login token.
+/// ## Curl Example
+/// ```bash
+/// curl -X GET http://127.0.0.1:8000/api/user/login?code={code}&oauth_redirect_uri={oauth_redirect_uri}
+/// ```
 #[get("/google?<code>&<oauth_redirect_uri>")]
 async fn google_oauth_code<'a>(
     code: String,
@@ -141,13 +157,19 @@ async fn google_oauth_code<'a>(
     }
 }
 
-/// User login API
-/// # Response
-/// ## Response Code
-/// * [Code::LoginUserNotFoundError]
-/// * [Code::PasswordError] - Input password error.
-/// ## Response Content
-/// * [Token] - A JWT token.
+/// # User login API
+/// ## Request
+/// - FromData [LoginFromData]
+/// ## Response
+/// - Code
+///     - [Code::LoginUserNotFoundError]
+///     - [Code::PasswordError] - Input password error.
+/// - Content
+///     - [Token] - A JWT token.
+/// ## Curl Example
+/// ```bash
+/// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 http://127.0.0.1:8000/api/user/login
+/// ```
 #[post("/user/login", data = "<login_info>")]
 async fn login<'a>(
     login_info: Form<LoginFromData>,
@@ -209,6 +231,18 @@ async fn login<'a>(
     }
 }
 
+/// # Sign up account API
+/// ## Request
+/// - FromData [SignUp]
+/// ## Response
+/// - Code
+///     - [Code::SignUpEmailAlreadyRegistered]
+/// - Content
+///     - [Code::Ok]
+/// ## Curl Example
+/// ```bash
+/// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 -F username=abc -F modes='["Student"]' http://127.0.0.1:8000/api/user/sign-up
+/// ```
 #[post("/user/sign-up", data = "<sign_up>")]
 async fn sign_up<'a>(
     sign_up: Form<SignUp>,
