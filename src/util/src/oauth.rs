@@ -59,13 +59,13 @@ pub struct FacebookAccountInfo {
 }
 
 impl OAuthData<'_> {
-    pub fn new<'a>(
+    pub fn new(
         account_type: OauthAccountType,
         client_secret: String,
         client_id: String,
         issuer: String,
-        redirect_path: &'a str,
-    ) -> OAuthData<'a> {
+        redirect_path: &str,
+    ) -> OAuthData {
         OAuthData {
             account_type,
             client_secret,
@@ -87,17 +87,11 @@ impl OAuthData<'_> {
             OauthAccountType::Facebook => {
                 scope = encode("public_profile,email");
             }
-        }
-
-        let auth_url;
-        match self.account_type {
-            OauthAccountType::Google => {
-                auth_url = GOOGLE_AUTH_URL;
-            }
-            OauthAccountType::Facebook => {
-                auth_url = FACEBOOK_AUTH_URL;
-            }
-        }
+        };
+        let auth_url = match self.account_type {
+            OauthAccountType::Google => GOOGLE_AUTH_URL,
+            OauthAccountType::Facebook => FACEBOOK_AUTH_URL,
+        };
 
         let redirect_uri = get_redirect_uri_by_path(&self.issuer, self.redirect_path);
 
@@ -129,15 +123,10 @@ impl OAuthData<'_> {
             form_data.push(("grant_type", "authorization_code".to_string()));
         }
 
-        let token_url;
-        match self.account_type {
-            OauthAccountType::Google => {
-                token_url = GOOGLE_TOKEN_URL;
-            }
-            OauthAccountType::Facebook => {
-                token_url = FACEBOOK_TOKEN_URL;
-            }
-        }
+        let token_url = match self.account_type {
+            OauthAccountType::Google => GOOGLE_TOKEN_URL,
+            OauthAccountType::Facebook => FACEBOOK_TOKEN_URL,
+        };
 
         let response = reqwest::Client::new()
             .post(token_url)
