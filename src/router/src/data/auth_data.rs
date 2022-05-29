@@ -53,6 +53,7 @@ pub struct Claims {
 pub struct LoginUserData {
     pub(crate) id: String,
     pub(crate) username: String,
+    pub(crate) verified_email: bool,
     pub(crate) modes: Vec<UserMode>,
 }
 
@@ -69,9 +70,10 @@ impl<'r> FromRequest<'r> for LoginUserData {
             let token_info = token.split(' ').collect::<Vec<&str>>();
             let token_type = token_info.get(0);
             let token_content = token_info.get(1);
+
             if let Some(_token_type @ &"Bearer") = token_type {
                 if let Some(token_content) = token_content {
-                    println!("{}", token_content);
+                    // get rocket config
                     let config = request
                         .guard::<&'r State<Config>>()
                         .await
@@ -85,6 +87,7 @@ impl<'r> FromRequest<'r> for LoginUserData {
                             id: user_data.claims.id,
                             username: user_data.claims.username,
                             modes: user_data.claims.modes,
+                            verified_email: user_data.claims.verified_email
                         });
                     }
                 }

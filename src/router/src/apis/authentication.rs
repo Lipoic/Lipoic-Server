@@ -53,7 +53,7 @@ impl<'r> FromRequest<'r> for RequestIp {
 /// - Code
 ///     - [Code::Ok]
 /// - Content
-///     - [Auth] - A OAuth url
+///     - [AuthUrl] - A OAuth url
 #[get("/google/url?<redirect_uri>")]
 fn google_oauth<'a>(
     redirect_uri: &'a str,

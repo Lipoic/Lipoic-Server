@@ -8,6 +8,17 @@ use rocket::response::status::Unauthorized;
 use rocket::serde::json::Json;
 use rocket::State;
 
+/// # Get login user info
+/// ## Request
+/// - Path `/api/user/info`
+/// - [X] Authorization
+/// ## Response
+/// - Code
+///     - [Code::Ok]
+///     - [Code::AuthError]
+///     - [Code::LoginUserNotFoundError]
+/// - Content
+///     - [UserInfo]
 #[get("/info")]
 async fn user_info(
     login_user_data: Result<LoginUserData, AuthError>,
@@ -41,7 +52,7 @@ async fn user_info(
             }),
         ))
     } else {
-        Err(Unauthorized(Some(Response::data(Code::AuthError, None))))
+        Err(Unauthorized(Some(Response::data(Code::LoginUserNotFoundError, None))))
     }
 }
 
