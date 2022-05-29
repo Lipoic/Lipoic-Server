@@ -87,7 +87,7 @@ impl<'r> FromRequest<'r> for LoginUserData {
                             id: user_data.claims.id,
                             username: user_data.claims.username,
                             modes: user_data.claims.modes,
-                            verified_email: user_data.claims.verified_email
+                            verified_email: user_data.claims.verified_email,
                         });
                     }
                 }

@@ -56,7 +56,10 @@ async fn user_info(
             }),
         ))
     } else {
-        Err(Unauthorized(Some(Response::data(Code::LoginUserNotFoundError, None))))
+        Err(Unauthorized(Some(Response::data(
+            Code::LoginUserNotFoundError,
+            None,
+        ))))
     }
 }
 
