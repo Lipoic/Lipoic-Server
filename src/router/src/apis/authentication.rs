@@ -13,7 +13,7 @@ use rocket::{Request, State};
 use util::bcrypt::password_hash;
 use util::email::{send_verify_email, VerifyEmailClaims};
 use util::jwt::create_jwt_token;
-use util::oauth::GoogleOAuth;
+use util::oauth::{OAuthData, OauthAccountType};
 use util::util::create_exp;
 
 use crate::data::auth_data::Claims;
@@ -59,7 +59,8 @@ fn google_oauth<'a>(
     redirect_uri: &'a str,
     config: &'a State<Config>,
 ) -> Json<Response<'a, AuthUrl>> {
-    let google_auth = GoogleOAuth::new(
+    let google_auth = OAuthData::new(
+        OauthAccountType::Google,
         config.google_oauth_secret.clone(),
         config.google_oauth_id.clone(),
         config.issuer.clone(),
@@ -98,7 +99,8 @@ async fn google_oauth_code<'a>(
     db: &'a State<DB>,
     request_ip: RequestIp,
 ) -> Result<Json<Response<'a, Token>>, BadRequest<Json<Response<'a, String>>>> {
-    let google_auth = GoogleOAuth::new(
+    let google_auth = OAuthData::new(
+        OauthAccountType::Google,
         config.google_oauth_secret.clone(),
         config.google_oauth_id.clone(),
         config.issuer.clone(),

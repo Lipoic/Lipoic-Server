@@ -8,3 +8,7 @@ pub fn create_exp(time: usize) -> usize {
         .as_secs() as usize)
         + time
 }
+
+pub fn get_redirect_uri_by_path(issuer: &str, path: &str) -> String {
+    format!("{}{}", issuer, path)
+}
