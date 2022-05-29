@@ -12,15 +12,15 @@ use rocket::serde::json::Json;
 use rocket::{Request, State};
 use util::bcrypt::password_hash;
 use util::email::{send_verify_email, VerifyEmailClaims};
-use util::jwt::{create_jwt_token};
+use util::jwt::create_jwt_token;
 use util::oauth::GoogleOAuth;
 use util::util::create_exp;
 
+use crate::data::auth_data::Claims;
 use crate::data::auth_data::{AuthUrl, LoginFromData, SignUp, Token};
 use crate::data::code::Code;
 use crate::data::response::Response;
 use crate::Config;
-use crate::data::auth_data::Claims;
 
 #[doc(hidden)]
 struct UserInfo {
@@ -55,7 +55,10 @@ impl<'r> FromRequest<'r> for RequestIp {
 /// - Content
 ///     - [Auth] - A OAuth url
 #[get("/google/url?<redirect_uri>")]
-fn google_oauth<'a>(redirect_uri: &'a str, config: &'a State<Config>) -> Json<Response<'a, AuthUrl>> {
+fn google_oauth<'a>(
+    redirect_uri: &'a str,
+    config: &'a State<Config>,
+) -> Json<Response<'a, AuthUrl>> {
     let google_auth = GoogleOAuth::new(
         config.google_oauth_secret.clone(),
         config.google_oauth_id.clone(),
@@ -153,7 +156,7 @@ async fn google_oauth_code<'a>(
                     username: login_user_info.name,
                     id: user_data._id.to_string(),
                     verified_email: login_user_info.verified_email,
-                    modes: vec![UserMode::Student]
+                    modes: vec![UserMode::Student],
                 },
             )
             .unwrap();
@@ -218,7 +221,7 @@ async fn login<'a>(
                     username: find_user.username,
                     id: find_user._id.to_string(),
                     verified_email: find_user.verified_email,
-                    modes: find_user.modes
+                    modes: find_user.modes,
                 },
             )
             .unwrap();

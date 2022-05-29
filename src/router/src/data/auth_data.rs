@@ -1,14 +1,14 @@
-use rocket::http::Status;
-use rocket::{Request, State};
-use rocket::request::{FromRequest, Outcome};
-use rocket::response::status::Unauthorized;
-use database::model::auth::user::{UserMode};
-use rocket::serde::json::Json;
-use rocket::serde::{Serialize, Deserialize};
-use util::jwt::{verify_token};
-use crate::Config;
 use crate::data::code::Code;
 use crate::data::response::Response;
+use crate::Config;
+use database::model::auth::user::UserMode;
+use rocket::http::Status;
+use rocket::request::{FromRequest, Outcome};
+use rocket::response::status::Unauthorized;
+use rocket::serde::json::Json;
+use rocket::serde::{Deserialize, Serialize};
+use rocket::{Request, State};
+use util::jwt::verify_token;
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
@@ -44,7 +44,7 @@ pub struct Claims {
     pub(crate) username: String,
     pub(crate) verified_email: bool,
     pub(crate) id: String,
-    pub(crate) modes: Vec<UserMode>
+    pub(crate) modes: Vec<UserMode>,
 }
 
 #[doc(hidden)]
@@ -53,7 +53,7 @@ pub struct Claims {
 pub struct LoginUserData {
     pub(crate) id: String,
     pub(crate) username: String,
-    pub(crate) modes: Vec<UserMode>
+    pub(crate) modes: Vec<UserMode>,
 }
 
 pub type AuthError = Unauthorized<Json<Response<'static, String>>>;
@@ -72,23 +72,28 @@ impl<'r> FromRequest<'r> for LoginUserData {
             if let Some(_token_type @ &"Bearer") = token_type {
                 if let Some(token_content) = token_content {
                     println!("{}", token_content);
-                    let config = request.guard::<&'r State<Config>>().await.succeeded().unwrap();
-                    if let Ok(user_data) = verify_token::<Claims>(token_content.to_string(), config.public_key.as_bytes()) {
+                    let config = request
+                        .guard::<&'r State<Config>>()
+                        .await
+                        .succeeded()
+                        .unwrap();
+                    if let Ok(user_data) = verify_token::<Claims>(
+                        token_content.to_string(),
+                        config.public_key.as_bytes(),
+                    ) {
                         return Outcome::Success(LoginUserData {
                             id: user_data.claims.id,
                             username: user_data.claims.username,
-                            modes: user_data.claims.modes
-                        })
+                            modes: user_data.claims.modes,
+                        });
                     }
                 }
             }
         }
 
-        Outcome::Failure((Status::Unauthorized, Unauthorized(
-            Some(Response::data(
-                Code::AuthError,
-                None,
-            ))
-        )))
+        Outcome::Failure((
+            Status::Unauthorized,
+            Unauthorized(Some(Response::data(Code::AuthError, None))),
+        ))
     }
 }

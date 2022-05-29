@@ -1,7 +1,7 @@
 /// Authenticate APIs
 mod authentication;
-mod verify_email;
 mod user;
+mod verify_email;
 
 use rocket::fairing::AdHoc;
 

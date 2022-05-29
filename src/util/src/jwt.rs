@@ -4,7 +4,7 @@ use jsonwebtoken::{
     decode, encode, Algorithm, DecodingKey, EncodingKey, Header, TokenData, Validation,
 };
 use serde::de::DeserializeOwned;
-use serde::{Serialize};
+use serde::Serialize;
 
 /// create a new JWT token
 pub fn create_jwt_token<T: Serialize>(private_key: &[u8], claims: T) -> Result<String> {
