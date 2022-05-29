@@ -10,6 +10,7 @@ const GOOGLE_USER_INFO: &str = "https://www.googleapis.com/oauth2/v1/userinfo?al
 
 const FACEBOOK_AUTH_URL: &str = "https://www.facebook.com/dialog/oauth";
 const FACEBOOK_TOKEN_URL: &str = "https://graph.facebook.com/v14.0/oauth/access_token";
+const FACEBOOK_USER_INFO: &str = "https://graph.facebook.com/v14.0/";
 
 pub enum OauthAccountType {
     Google,
@@ -28,8 +29,10 @@ pub struct OAuthData<'a> {
 pub struct AccessTokenInfo {
     pub access_token: String,
     pub expires_in: i32,
+    #[serde(skip_deserializing)]
     pub scope: String,
     pub token_type: String,
+    #[serde(skip_deserializing)]
     pub id_token: String,
 }
 
@@ -43,6 +46,16 @@ pub struct GoogleAccountInfo {
     pub family_name: String,
     pub picture: String,
     pub locale: String,
+}
+
+#[derive(Deserialize)]
+pub struct FacebookAccountInfo {
+    pub id: String,
+    pub first_name: String,
+    pub last_name: String,
+    pub name: String,
+    pub email: String,
+    pub picture: String,
 }
 
 impl OAuthData<'_> {
@@ -138,10 +151,12 @@ impl OAuthData<'_> {
 }
 
 impl AccessTokenInfo {
-    /// request user info
+    /// request google user info
     ///
     /// return [`GoogleAccountInfo`]
-    pub async fn get_user_info(&self) -> Result<GoogleAccountInfo, Box<dyn std::error::Error>> {
+    pub async fn get_google_user_info(
+        &self,
+    ) -> Result<GoogleAccountInfo, Box<dyn std::error::Error>> {
         let response = reqwest::Client::new()
             .get(GOOGLE_USER_INFO)
             .bearer_auth(self.access_token.clone())
@@ -149,5 +164,20 @@ impl AccessTokenInfo {
             .await?;
 
         Ok(response.json::<GoogleAccountInfo>().await?)
+    }
+
+    /// request facebook user info
+    ///
+    /// return [`FacebookAccountInfo`]
+    pub async fn get_facebook_user_info(
+        &self,
+    ) -> Result<FacebookAccountInfo, Box<dyn std::error::Error>> {
+        let response = reqwest::Client::new()
+            .get(format!("{}/me", FACEBOOK_USER_INFO))
+            .bearer_auth(self.access_token.clone())
+            .send()
+            .await?;
+
+        Ok(response.json::<FacebookAccountInfo>().await?)
     }
 }

@@ -109,7 +109,7 @@ async fn google_oauth_code<'a>(
 
     match google_auth.authorization_code(code).await {
         Ok(data) => {
-            let login_user_info = if let Ok(info) = data.get_user_info().await {
+            let login_user_info = if let Ok(info) = data.get_google_user_info().await {
                 info
             } else {
                 return Err(BadRequest(Some(Response::data(

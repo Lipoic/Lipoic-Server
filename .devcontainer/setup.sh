@@ -11,9 +11,7 @@ apt-get install -y \
   build-essential \
   openssl \
   pkg-config \
-  libssl-dev \
-  docker \
-  docker-compose
+  libssl-dev
 
 ## Install rustup and common components
 curl https://sh.rustup.rs -sSf | sh -s -- -y 
