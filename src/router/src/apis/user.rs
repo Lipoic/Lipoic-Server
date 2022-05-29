@@ -19,6 +19,10 @@ use rocket::State;
 ///     - [Code::LoginUserNotFoundError]
 /// - Content
 ///     - [UserInfo]
+/// ## Curl Example
+/// ```bash
+/// curl -X GET -H "Authorization: Bearer {Token}" http://127.0.0.1:8000/api/user/info
+/// ```
 #[get("/info")]
 async fn user_info(
     login_user_data: Result<LoginUserData, AuthError>,
