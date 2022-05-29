@@ -10,7 +10,7 @@ const GOOGLE_USER_INFO: &str = "https://www.googleapis.com/oauth2/v1/userinfo?al
 
 const FACEBOOK_AUTH_URL: &str = "https://www.facebook.com/dialog/oauth";
 const FACEBOOK_TOKEN_URL: &str = "https://graph.facebook.com/v14.0/oauth/access_token";
-const FACEBOOK_USER_INFO: &str = "https://graph.facebook.com/v14.0/";
+const FACEBOOK_USER_INFO: &str = "https://graph.facebook.com/v14.0";
 
 pub enum OauthAccountType {
     Google,
