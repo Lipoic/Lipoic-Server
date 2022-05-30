@@ -79,15 +79,13 @@ impl OAuthData<'_> {
     ///
     /// return one url [`String`]
     pub fn get_auth_url(&self) -> String {
-        let scope;
-        match self.account_type {
-            OauthAccountType::Google => {
-                scope = encode("https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email");
-            }
-            OauthAccountType::Facebook => {
-                scope = encode("public_profile,email");
-            }
+        let scope = match self.account_type {
+            OauthAccountType::Google => 
+                 encode("https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"),
+            OauthAccountType::Facebook => 
+                 encode("public_profile,email"),
         };
+        
         let auth_url = match self.account_type {
             OauthAccountType::Google => GOOGLE_AUTH_URL,
             OauthAccountType::Facebook => FACEBOOK_AUTH_URL,
