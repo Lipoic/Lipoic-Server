@@ -5,11 +5,15 @@ const CLIENT_SECRET: &str = "abc";
 
 #[test]
 fn google_oauth2_get_auth_url_test() {
+    let client_secret = &CLIENT_SECRET.to_string();
+    let client_id = &CLIENT_ID.to_string();
+    let issuer = &"http://127.0.0.1:8000".to_string();
+
     let oauth = OAuthData::new(
         OauthAccountType::Google,
-        CLIENT_SECRET.to_string(),
-        CLIENT_ID.to_string(),
-        "http://127.0.0.1:8000".to_string(),
+        client_secret,
+        client_id,
+        issuer,
         "/",
     );
 
