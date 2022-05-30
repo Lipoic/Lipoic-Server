@@ -19,9 +19,9 @@ pub enum OauthAccountType {
 
 pub struct OAuthData<'a> {
     account_type: OauthAccountType,
-    client_secret: String,
-    client_id: String,
-    issuer: String,
+    client_secret: &'a String,
+    client_id: &'a String,
+    issuer: &'a String,
     redirect_path: &'a str,
 }
 
@@ -59,13 +59,13 @@ pub struct FacebookAccountInfo {
 }
 
 impl OAuthData<'_> {
-    pub fn new(
+    pub fn new<'a>(
         account_type: OauthAccountType,
-        client_secret: String,
-        client_id: String,
-        issuer: String,
-        redirect_path: &str,
-    ) -> OAuthData {
+        client_secret: &'a String,
+        client_id: &'a String,
+        issuer: &'a String,
+        redirect_path: &'a str,
+    ) -> OAuthData<'a> {
         OAuthData {
             account_type,
             client_secret,

@@ -23,9 +23,9 @@ use crate::data::response::Response;
 use crate::Config;
 
 #[doc(hidden)]
-struct CreateUserInfo {
-    username: String,
-    email: String,
+struct CreateUserInfo<'a> {
+    username: &'a String,
+    email: &'a String,
     verified_email: bool,
     ip: String,
 }
@@ -61,9 +61,9 @@ fn google_oauth<'a>(
 ) -> Json<Response<'a, AuthUrl>> {
     let google_auth = OAuthData::new(
         OauthAccountType::Google,
-        config.google_oauth_secret.clone(),
-        config.google_oauth_id.clone(),
-        config.issuer.clone(),
+        &config.google_oauth_secret,
+        &config.google_oauth_id,
+        &config.issuer,
         redirect_uri,
     );
 
@@ -101,9 +101,9 @@ async fn google_oauth_code<'a>(
 ) -> Result<Json<Response<'a, Token>>, BadRequest<Json<Response<'a, String>>>> {
     let google_auth = OAuthData::new(
         OauthAccountType::Google,
-        config.google_oauth_secret.clone(),
-        config.google_oauth_id.clone(),
-        config.issuer.clone(),
+        &config.google_oauth_secret,
+        &config.google_oauth_id,
+        &config.issuer,
         oauth_redirect_uri,
     );
 
@@ -125,11 +125,11 @@ async fn google_oauth_code<'a>(
                     name: login_user_info.name.clone(),
                     email: login_user_info.email.clone(),
                 }),
-                vec![],
+                &vec![],
                 None,
                 CreateUserInfo {
-                    username: login_user_info.name.clone(),
-                    email: login_user_info.email.clone(),
+                    username: &login_user_info.name,
+                    email: &login_user_info.email,
                     ip: request_ip.0,
                     verified_email: login_user_info.verified_email,
                 },
@@ -215,7 +215,7 @@ async fn login<'a>(
 
     if let Some(password_hash) = find_user.password_hash {
         // verify password correctness
-        if util::bcrypt::verify_password(password_hash, login_info.password.clone()).unwrap() {
+        if util::bcrypt::verify_password(password_hash, &login_info.password).unwrap() {
             let token = create_jwt_token(
                 config.private_key.as_bytes(),
                 Claims {
@@ -267,16 +267,16 @@ async fn sign_up<'a>(
     config: &'a State<Config>,
     request_ip: RequestIp,
 ) -> Result<Json<Response<'a, String>>, Conflict<Json<Response<'a, String>>>> {
-    let password_hash = password_hash(sign_up.password.clone()).unwrap();
+    let password_hash = password_hash(&sign_up.password).unwrap();
 
     let user_data = create_and_update_user_info(
         db.user.as_ref().unwrap(),
         None,
-        sign_up.modes.0.clone(),
+        &sign_up.modes.0,
         Some(password_hash),
         CreateUserInfo {
-            username: sign_up.username.clone(),
-            email: sign_up.email.clone(),
+            username: &sign_up.username,
+            email: &sign_up.email,
             ip: request_ip.0,
             verified_email: false,
         },
@@ -296,12 +296,12 @@ async fn sign_up<'a>(
         .unwrap();
 
         send_verify_email(
-            config.google_account_email.clone(),
-            config.google_account_password.clone(),
-            config.issuer.clone(),
+            &config.google_account_email,
+            &config.google_account_password,
+            &config.issuer,
             String::from("/verify-email"),
             code,
-            sign_up.email.clone(),
+            &sign_up.email,
         );
 
         // Response Ok.
@@ -320,9 +320,9 @@ async fn sign_up<'a>(
 async fn create_and_update_user_info(
     user: &Collection<User>,
     connect: Option<ConnectAccount>,
-    modes: Vec<UserMode>,
+    modes: &Vec<UserMode>,
     password_hash: Option<String>,
-    user_info: CreateUserInfo,
+    user_info: CreateUserInfo<'_>,
 ) -> Result<Option<User>, Error> {
     let mut option = FindOneAndUpdateOptions::default();
     option.upsert = Some(true);
