@@ -55,7 +55,20 @@ pub struct FacebookAccountInfo {
     pub last_name: String,
     pub name: String,
     pub email: String,
-    pub picture: String,
+    pub picture: FacebookAccountPicture,
+}
+
+#[derive(Deserialize)]
+pub struct FacebookAccountPicture {
+    pub data: FacebookAccountPictureData,
+}
+
+#[derive(Deserialize)]
+pub struct FacebookAccountPictureData {
+    pub height: i32,
+    pub is_silhouette: bool,
+    pub url: String,
+    pub width: i32,
 }
 
 impl OAuthData<'_> {
@@ -160,8 +173,7 @@ impl AccessTokenInfo {
         &self,
     ) -> Result<FacebookAccountInfo, Box<dyn std::error::Error>> {
         let response = reqwest::Client::new()
-            .get(format!("{}/me", FACEBOOK_USER_INFO))
-            .bearer_auth(self.access_token.clone())
+            .get(format!("{}/me?access_token={}", FACEBOOK_USER_INFO,self.access_token.clone()))
             .send()
             .await?;
 
