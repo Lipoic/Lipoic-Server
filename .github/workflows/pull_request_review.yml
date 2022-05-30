@@ -6,16 +6,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: actions-rs/toolchain@v1
+      - name: Install clippy
+        uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-          components: clippy
           override: true
-      - uses: actions-rs/clippy-check@v1.0.7
+          components: clippy
+
+      - uses: sksat/action-clippy@main
         with:
-          token: ${{ github.token }}
-          toolchain: nightly
-          args: --all-features
+          github_token: ${{ github.token }}
+          working_directory: ./
+          level: warning
+          reporter: github-pr-check
+          filter_mode: added
   test:
     runs-on: ubuntu-latest
     steps:
