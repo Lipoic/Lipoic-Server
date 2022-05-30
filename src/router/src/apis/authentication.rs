@@ -23,7 +23,7 @@ use crate::data::response::Response;
 use crate::Config;
 
 #[doc(hidden)]
-struct UserInfo {
+struct CreateUserInfo {
     username: String,
     email: String,
     verified_email: bool,
@@ -127,7 +127,7 @@ async fn google_oauth_code<'a>(
                 }),
                 vec![],
                 None,
-                UserInfo {
+                CreateUserInfo {
                     username: login_user_info.name.clone(),
                     email: login_user_info.email.clone(),
                     ip: request_ip.0,
@@ -274,7 +274,7 @@ async fn sign_up<'a>(
         None,
         sign_up.modes.0.clone(),
         Some(password_hash),
-        UserInfo {
+        CreateUserInfo {
             username: sign_up.username.clone(),
             email: sign_up.email.clone(),
             ip: request_ip.0,
@@ -322,7 +322,7 @@ async fn create_and_update_user_info(
     connect: Option<ConnectAccount>,
     modes: Vec<UserMode>,
     password_hash: Option<String>,
-    user_info: UserInfo,
+    user_info: CreateUserInfo,
 ) -> Result<Option<User>, Error> {
     let mut option = FindOneAndUpdateOptions::default();
     option.upsert = Some(true);
