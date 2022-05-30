@@ -62,5 +62,9 @@ services:
       ROCKET_GOOGLE_OAUTH_ID: ""
       # you google OAuth app secret
       ROCKET_GOOGLE_OAUTH_SECRET: ""
+      # you facebook Login app id
+      ROCKET_FACEBOOK_OAUTH_ID: ""
+      # you facebook Login app secret
+      ROCKET_FACEBOOK_OAUTH_SECRET: ""
     depends_on:
       - mongo
