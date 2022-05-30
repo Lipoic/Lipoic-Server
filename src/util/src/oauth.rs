@@ -104,7 +104,7 @@ impl OAuthData<'_> {
             OauthAccountType::Facebook => FACEBOOK_AUTH_URL,
         };
 
-        let redirect_uri = get_redirect_uri_by_path(&self.issuer, self.redirect_path);
+        let redirect_uri = get_redirect_uri_by_path(self.issuer, self.redirect_path);
 
         format!(
             "{}?client_id={}&response_type=code&scope={}&redirect_uri={}",
@@ -126,7 +126,7 @@ impl OAuthData<'_> {
             ("code", code),
             (
                 "redirect_uri",
-                get_redirect_uri_by_path(&self.issuer, self.redirect_path),
+                get_redirect_uri_by_path(self.issuer, self.redirect_path),
             ),
         ];
 
