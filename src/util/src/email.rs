@@ -13,12 +13,12 @@ pub struct VerifyEmailClaims {
 }
 
 pub fn send_verify_email(
-    username: String,
-    password: String,
-    issuer: String,
+    username: &String,
+    password: &String,
+    issuer: &String,
     auth_path: String,
     code: String,
-    to_email: String,
+    to_email: &String,
 ) {
     let url = format!("{}{}?code={}", issuer, auth_path, code);
     let email_html = html! {
@@ -44,7 +44,7 @@ pub fn send_verify_email(
         )
         .unwrap();
 
-    let creds = Credentials::new(username, password);
+    let creds = Credentials::new(username.clone(), password.clone());
     // Open a remote connection to gmail
     let mailer = SmtpTransport::relay("smtp.gmail.com")
         .unwrap()
