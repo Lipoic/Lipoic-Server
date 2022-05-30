@@ -20,10 +20,15 @@ pub struct Config {
     private_key: String,
     public_key: String,
     mongodb_url: String,
+
     google_oauth_id: String,
     google_oauth_secret: String,
     google_account_email: String,
     google_account_password: String,
+
+    facebook_oauth_id: String,
+    facebook_oauth_secret: String,
+
     issuer: String,
 }
 
