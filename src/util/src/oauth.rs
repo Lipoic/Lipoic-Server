@@ -2,8 +2,6 @@ use reqwest::Error;
 use serde::Deserialize;
 use urlencoding::encode;
 
-use crate::util::get_redirect_uri_by_path;
-
 const GOOGLE_AUTH_URL: &str = "https://accounts.google.com/o/oauth2/auth";
 const GOOGLE_TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
 const GOOGLE_USER_INFO: &str = "https://www.googleapis.com/oauth2/v1/userinfo?alt=json";
@@ -21,8 +19,7 @@ pub struct OAuthData<'a> {
     account_type: OauthAccountType,
     client_secret: &'a String,
     client_id: &'a String,
-    issuer: &'a String,
-    redirect_path: &'a str,
+    redirect_uri: &'a str,
 }
 
 #[derive(Deserialize)]
@@ -76,15 +73,13 @@ impl OAuthData<'_> {
         account_type: OauthAccountType,
         client_secret: &'a String,
         client_id: &'a String,
-        issuer: &'a String,
         redirect_path: &'a str,
     ) -> OAuthData<'a> {
         OAuthData {
             account_type,
             client_secret,
             client_id,
-            issuer,
-            redirect_path,
+            redirect_uri: redirect_path,
         }
     }
 
@@ -93,25 +88,21 @@ impl OAuthData<'_> {
     /// return one url [`String`]
     pub fn get_auth_url(&self) -> String {
         let scope = match self.account_type {
-            OauthAccountType::Google => 
-                 encode("https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"),
-            OauthAccountType::Facebook => 
-                 encode("public_profile,email"),
+            OauthAccountType::Google => "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
+            OauthAccountType::Facebook => "public_profile,email",
         };
-        
+
         let auth_url = match self.account_type {
             OauthAccountType::Google => GOOGLE_AUTH_URL,
             OauthAccountType::Facebook => FACEBOOK_AUTH_URL,
         };
 
-        let redirect_uri = get_redirect_uri_by_path(self.issuer, self.redirect_path);
-
         format!(
             "{}?client_id={}&response_type=code&scope={}&redirect_uri={}",
             auth_url,
             self.client_id,
-            scope,
-            encode(redirect_uri.as_ref())
+            encode(scope),
+            encode(self.redirect_uri)
         )
     }
 
@@ -124,10 +115,7 @@ impl OAuthData<'_> {
             ("client_secret", self.client_secret.clone()),
             ("grant_type", "authorization_code".to_string()),
             ("code", code),
-            (
-                "redirect_uri",
-                get_redirect_uri_by_path(self.issuer, self.redirect_path),
-            ),
+            ("redirect_uri", self.redirect_uri.to_string()),
         ];
 
         if matches!(self.account_type, OauthAccountType::Google) {
@@ -173,7 +161,11 @@ impl AccessTokenInfo {
         &self,
     ) -> Result<FacebookAccountInfo, Box<dyn std::error::Error>> {
         let response = reqwest::Client::new()
-            .get(format!("{}/me?access_token={}", FACEBOOK_USER_INFO,self.access_token.clone()))
+            .get(format!(
+                "{}/me?access_token={}",
+                FACEBOOK_USER_INFO,
+                self.access_token.clone()
+            ))
             .send()
             .await?;
 

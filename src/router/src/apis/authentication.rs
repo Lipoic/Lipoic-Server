@@ -63,7 +63,6 @@ fn google_oauth<'a>(
         OauthAccountType::Google,
         &config.google_oauth_secret,
         &config.google_oauth_id,
-        &config.issuer,
         redirect_uri,
     );
 
@@ -103,7 +102,6 @@ async fn google_oauth_code<'a>(
         OauthAccountType::Google,
         &config.google_oauth_secret,
         &config.google_oauth_id,
-        &config.issuer,
         oauth_redirect_uri,
     );
 
