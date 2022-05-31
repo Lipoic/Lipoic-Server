@@ -43,7 +43,6 @@ fn google_oauth<'a>(
         &ConnectType::Google,
         &config.google_oauth_secret,
         &config.google_oauth_id,
-        &config.issuer,
         redirect_uri,
     );
 
@@ -83,7 +82,6 @@ async fn google_oauth_code<'a>(
         &ConnectType::Google,
         &config.google_oauth_secret,
         &config.google_oauth_id,
-        &config.issuer,
         oauth_redirect_uri,
     );
 
@@ -116,7 +114,6 @@ fn facebook_oauth<'a>(
         &ConnectType::Facebook,
         &config.facebook_oauth_secret,
         &config.facebook_oauth_id,
-        &config.issuer,
         redirect_uri,
     );
 
@@ -156,7 +153,6 @@ async fn facebook_oauth_code<'a>(
         &ConnectType::Facebook,
         &config.facebook_oauth_secret,
         &config.facebook_oauth_id,
-        &config.issuer,
         oauth_redirect_uri,
     );
 
