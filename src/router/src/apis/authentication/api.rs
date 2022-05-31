@@ -68,7 +68,7 @@ fn google_oauth<'a>(
 ///     - [Token] - A login token.
 /// ## Curl Example
 /// ```bash
-/// curl -X GET http://127.0.0.1:8000/api/user/login?code={code}&oauth_redirect_uri={oauth_redirect_uri}
+/// curl -X GET http://127.0.0.1:8000/api/authentication/google?code={code}&oauth_redirect_uri={oauth_redirect_uri}
 /// ```
 #[get("/google?<code>&<oauth_redirect_uri>")]
 async fn google_oauth_code<'a>(
@@ -139,7 +139,7 @@ fn facebook_oauth<'a>(
 ///     - [Token] - A login token.
 /// ## Curl Example
 /// ```bash
-/// curl -X GET http://127.0.0.1:8000/api/user/login?code={code}&oauth_redirect_uri={oauth_redirect_uri}
+/// curl -X GET http://127.0.0.1:8000/api/authentication/facebook?code={code}&oauth_redirect_uri={oauth_redirect_uri}
 /// ```
 #[get("/facebook?<code>&<oauth_redirect_uri>")]
 async fn facebook_oauth_code<'a>(
