@@ -52,7 +52,7 @@ async fn user_info(
                 username: user_info.username,
                 email: user_info.email,
                 modes: user_info.modes,
-                connects: user_info.connect,
+                connects: user_info.connects,
             }),
         ))
     } else {

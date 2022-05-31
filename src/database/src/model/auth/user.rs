@@ -8,7 +8,7 @@ pub struct User {
     pub email: String,
     pub verified_email: bool,
     pub password_hash: Option<String>,
-    pub connect: Vec<ConnectAccount>,
+    pub connects: Vec<ConnectAccount>,
     pub modes: Vec<UserMode>,
     pub login_ips: Vec<String>,
 }
