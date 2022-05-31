@@ -67,5 +67,5 @@ fn create_jwt_token_test() {
     )
     .unwrap();
 
-    verify_token::<Claims>(token.clone(), PUBLIC_KEY.as_bytes()).unwrap();
+    verify_token::<Claims>(token, PUBLIC_KEY.as_bytes()).unwrap();
 }

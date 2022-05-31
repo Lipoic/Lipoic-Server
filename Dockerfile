@@ -1,9 +1,13 @@
-FROM rust:1.60.0 AS builder
+FROM rust:1.61.0 AS builder
 
 WORKDIR /usr/lipoic-backend
 COPY ./src ./src
 COPY ./Cargo.lock .
 COPY ./Cargo.toml .
+
+RUN apt-get install \
+libssl-dev \
+openssl
 
 RUN cargo build --release
 
