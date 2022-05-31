@@ -1,7 +1,7 @@
 use crate::data::code::Code;
 use crate::data::response::Response;
 use crate::Config;
-use database::{doc, DB};
+use database::{doc, Database};
 use rocket::fairing::AdHoc;
 use rocket::response::status::Unauthorized;
 use rocket::response::Redirect;
@@ -14,7 +14,7 @@ use util::jwt::verify_token;
 async fn verify_email<'a>(
     code: String,
     config: &'a State<Config>,
-    db: &'a State<DB>,
+    db: &'a State<Database>,
 ) -> Result<Redirect, Unauthorized<Json<Response<'a, String>>>> {
     if let Ok(verify_user_data) =
         verify_token::<VerifyEmailClaims>(code, config.public_key.as_bytes())

@@ -16,3 +16,5 @@ bcrypt = "0.13"
 # email
 lettre = "0.10.0-rc.6"
 maud = "0.23.0"
+
+database = { path = "../database" }

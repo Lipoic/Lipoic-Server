@@ -6,13 +6,13 @@ pub use mongodb::error::Error;
 pub use mongodb::Collection;
 use mongodb::{options::ClientOptions, Client};
 
-pub struct DB {
+pub struct Database {
     pub client: Option<Client>,
     pub user: Option<Collection<model::auth::user::User>>,
 }
 
 /// Init mongodb
-pub async fn init(mongodb_url: String) -> mongodb::error::Result<DB> {
+pub async fn init(mongodb_url: String) -> mongodb::error::Result<Database> {
     let mut client_options = ClientOptions::parse(mongodb_url).await?;
 
     // Manually set an option
@@ -28,7 +28,7 @@ pub async fn init(mongodb_url: String) -> mongodb::error::Result<DB> {
         .run_command(doc! {"ping": true}, None)
         .await?;
 
-    Ok(DB {
+    Ok(Database {
         client: Some(client),
         user: Some(db.collection("user")),
     })

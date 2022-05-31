@@ -13,11 +13,11 @@ pub struct User {
     pub login_ips: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum ConnectType {
     Google,
     Facebook,
-    TaiwanCloudEducation,
+    // TaiwanCloudEducation,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -1,4 +1,5 @@
-use util::oauth::{OAuthData, OauthAccountType};
+use database::model::auth::user::ConnectType;
+use util::oauth::OAuthData;
 
 const CLIENT_ID: &str = "123";
 const CLIENT_SECRET: &str = "abc";
@@ -10,7 +11,7 @@ fn google_oauth2_get_auth_url_test() {
     let issuer = &"http://127.0.0.1:8000".to_string();
 
     let oauth = OAuthData::new(
-        OauthAccountType::Google,
+        &ConnectType::Google,
         client_secret,
         client_id,
         issuer,
@@ -27,7 +28,7 @@ fn facebook_oauth2_get_auth_url_test() {
     let issuer = &"http://127.0.0.1:8000".to_string();
 
     let oauth = OAuthData::new(
-        OauthAccountType::Facebook,
+        &ConnectType::Facebook,
         client_secret,
         client_id,
         issuer,

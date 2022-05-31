@@ -2,7 +2,7 @@ use crate::data::auth_data::{AuthError, LoginUserData};
 use crate::data::code::Code;
 use crate::data::response::Response;
 use crate::data::user::UserInfo;
-use database::{doc, mongodb::bson::oid::ObjectId, DB};
+use database::{doc, mongodb::bson::oid::ObjectId, Database};
 use rocket::fairing::AdHoc;
 use rocket::response::status::Unauthorized;
 use rocket::serde::json::Json;
@@ -26,7 +26,7 @@ use rocket::State;
 #[get("/info")]
 async fn user_info(
     login_user_data: Result<LoginUserData, AuthError>,
-    db: &State<DB>,
+    db: &State<Database>,
 ) -> Result<Json<Response<'static, UserInfo>>, AuthError> {
     let login_user_data = match login_user_data {
         Ok(login_user_data) => login_user_data,

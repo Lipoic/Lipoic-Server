@@ -1,3 +1,4 @@
+use database::model::auth::user::ConnectType;
 use reqwest::Error;
 use serde::Deserialize;
 use urlencoding::encode;
@@ -12,26 +13,23 @@ const FACEBOOK_AUTH_URL: &str = "https://www.facebook.com/dialog/oauth";
 const FACEBOOK_TOKEN_URL: &str = "https://graph.facebook.com/v14.0/oauth/access_token";
 const FACEBOOK_USER_INFO: &str = "https://graph.facebook.com/v14.0";
 
-pub enum OauthAccountType {
-    Google,
-    Facebook,
-}
-
 pub struct OAuthData<'a> {
-    account_type: OauthAccountType,
-    client_secret: &'a String,
-    client_id: &'a String,
-    issuer: &'a String,
-    redirect_path: &'a str,
+  pub account_type: &'a ConnectType,
+  pub client_secret: &'a String,
+  pub client_id: &'a String,
+  pub issuer: &'a String,
+  pub redirect_path: &'a str,
 }
 
 #[derive(Deserialize)]
 pub struct AccessTokenInfo {
     pub access_token: String,
     pub expires_in: i32,
+    /// Appears only in google OAuth
     #[serde(skip_deserializing)]
     pub scope: String,
     pub token_type: String,
+    /// Appears only in google OAuth
     #[serde(skip_deserializing)]
     pub id_token: String,
 }
@@ -58,6 +56,7 @@ pub struct FacebookAccountInfo {
     pub picture: FacebookAccountPicture,
 }
 
+
 #[derive(Deserialize)]
 pub struct FacebookAccountPicture {
     pub data: FacebookAccountPictureData,
@@ -71,9 +70,41 @@ pub struct FacebookAccountPictureData {
     pub width: i32,
 }
 
+#[derive(Deserialize)]
+pub struct OAuthAccountInfo {
+    pub id: String,
+    pub name: String,
+    pub email: String,
+    pub picture: String,
+    pub verified_email: bool,
+}
+
+impl OAuthAccountInfo{
+    fn from_google(google_account_info: GoogleAccountInfo) -> Self {
+        OAuthAccountInfo {
+            id: google_account_info.id,
+            name: google_account_info.name,
+            email: google_account_info.email,
+            picture: google_account_info.picture,
+            verified_email: google_account_info.verified_email,
+        }
+    }
+
+    fn from_facebook(facebook_account_info: FacebookAccountInfo) -> Self {
+        OAuthAccountInfo {
+            id: facebook_account_info.id,
+            name: facebook_account_info.name,
+            email: facebook_account_info.email,
+            picture: facebook_account_info.picture.data.url,
+            verified_email: true,
+        }
+    }
+}
+
+
 impl OAuthData<'_> {
     pub fn new<'a>(
-        account_type: OauthAccountType,
+        account_type:&'a ConnectType,
         client_secret: &'a String,
         client_id: &'a String,
         issuer: &'a String,
@@ -93,15 +124,15 @@ impl OAuthData<'_> {
     /// return one url [`String`]
     pub fn get_auth_url(&self) -> String {
         let scope = match self.account_type {
-            OauthAccountType::Google => 
+            ConnectType::Google => 
                  encode("https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"),
-            OauthAccountType::Facebook => 
+                 ConnectType::Facebook => 
                  encode("public_profile,email"),
         };
         
         let auth_url = match self.account_type {
-            OauthAccountType::Google => GOOGLE_AUTH_URL,
-            OauthAccountType::Facebook => FACEBOOK_AUTH_URL,
+            ConnectType::Google => GOOGLE_AUTH_URL,
+            ConnectType::Facebook => FACEBOOK_AUTH_URL,
         };
 
         let redirect_uri = get_redirect_uri_by_path(self.issuer, self.redirect_path);
@@ -115,14 +146,13 @@ impl OAuthData<'_> {
         )
     }
 
-    /// authorization code
+    /// get access token info by code
     ///
     /// return [`AccessTokenInfo`]
     pub async fn authorization_code(&self, code: String) -> Result<AccessTokenInfo, Error> {
         let mut form_data = vec![
             ("client_id", self.client_id.clone()),
             ("client_secret", self.client_secret.clone()),
-            ("grant_type", "authorization_code".to_string()),
             ("code", code),
             (
                 "redirect_uri",
@@ -130,13 +160,13 @@ impl OAuthData<'_> {
             ),
         ];
 
-        if matches!(self.account_type, OauthAccountType::Google) {
+        if matches!(self.account_type, ConnectType::Google) {
             form_data.push(("grant_type", "authorization_code".to_string()));
         }
 
         let token_url = match self.account_type {
-            OauthAccountType::Google => GOOGLE_TOKEN_URL,
-            OauthAccountType::Facebook => FACEBOOK_TOKEN_URL,
+            ConnectType::Google => GOOGLE_TOKEN_URL,
+            ConnectType::Facebook => FACEBOOK_TOKEN_URL,
         };
 
         let response = reqwest::Client::new()
@@ -148,6 +178,7 @@ impl OAuthData<'_> {
 
         response.json::<AccessTokenInfo>().await
     }
+
 }
 
 impl AccessTokenInfo {
@@ -173,10 +204,17 @@ impl AccessTokenInfo {
         &self,
     ) -> Result<FacebookAccountInfo, Box<dyn std::error::Error>> {
         let response = reqwest::Client::new()
-            .get(format!("{}/me?access_token={}", FACEBOOK_USER_INFO,self.access_token.clone()))
+            .get(format!("{}/me?fields=id,first_name,last_name,name,email,picture&access_token={}", FACEBOOK_USER_INFO,self.access_token.clone()))
             .send()
             .await?;
 
         Ok(response.json::<FacebookAccountInfo>().await?)
+    }
+
+    pub async fn get_account_info(&self,account_type:&ConnectType) -> Result<OAuthAccountInfo, Box<dyn std::error::Error>> {
+       match account_type {
+           ConnectType::Google => Ok(OAuthAccountInfo::from_google(self.get_google_user_info().await?)),
+           ConnectType::Facebook =>  Ok(OAuthAccountInfo::from_facebook(self.get_facebook_user_info().await?)),
+       }
     }
 }

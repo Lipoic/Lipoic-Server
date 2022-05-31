@@ -1,19 +1,18 @@
 use database::model::auth::user::{ConnectAccount, ConnectType, User, UserMode};
 use database::mongodb::bson;
 use database::mongodb::options::FindOneAndUpdateOptions;
-use database::DB;
+use database::Database;
 use database::{doc, Collection, Error};
 use rocket::fairing::AdHoc;
 use rocket::form::Form;
 use rocket::http::Status;
-use rocket::request::{FromRequest, Outcome};
 use rocket::response::status::{BadRequest, Conflict};
 use rocket::serde::json::Json;
-use rocket::{Request, State};
+use rocket::State;
 use util::bcrypt::password_hash;
 use util::email::{send_verify_email, VerifyEmailClaims};
 use util::jwt::create_jwt_token;
-use util::oauth::{OAuthData, OauthAccountType};
+use util::oauth::OAuthData;
 use util::util::create_exp;
 
 use crate::data::auth_data::Claims;
@@ -22,27 +21,8 @@ use crate::data::code::Code;
 use crate::data::response::Response;
 use crate::Config;
 
-#[doc(hidden)]
-struct CreateUserInfo<'a> {
-    username: &'a String,
-    email: &'a String,
-    verified_email: bool,
-    ip: String,
-}
-
-/// Request Client IP Address
-#[doc(hidden)]
-struct RequestIp(String);
-
-#[rocket::async_trait]
-#[doc(hidden)]
-impl<'r> FromRequest<'r> for RequestIp {
-    type Error = ();
-
-    async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        Outcome::Success(RequestIp(request.client_ip().unwrap().to_string()))
-    }
-}
+use super::data::{CreateUserInfo, RequestIp};
+use super::util::connect_account;
 
 /// # Get Google OAuth url
 /// ## Request
@@ -60,7 +40,7 @@ fn google_oauth<'a>(
     config: &'a State<Config>,
 ) -> Json<Response<'a, AuthUrl>> {
     let google_auth = OAuthData::new(
-        OauthAccountType::Google,
+        &ConnectType::Google,
         &config.google_oauth_secret,
         &config.google_oauth_id,
         &config.issuer,
@@ -96,78 +76,98 @@ async fn google_oauth_code<'a>(
     code: String,
     oauth_redirect_uri: &'a str,
     config: &'a State<Config>,
-    db: &'a State<DB>,
+    db: &'a State<Database>,
     request_ip: RequestIp,
 ) -> Result<Json<Response<'a, Token>>, BadRequest<Json<Response<'a, String>>>> {
     let google_auth = OAuthData::new(
-        OauthAccountType::Google,
+        &ConnectType::Google,
         &config.google_oauth_secret,
         &config.google_oauth_id,
         &config.issuer,
         oauth_redirect_uri,
     );
 
-    match google_auth.authorization_code(code).await {
-        Ok(data) => {
-            let login_user_info = if let Ok(info) = data.get_google_user_info().await {
-                info
-            } else {
-                return Err(BadRequest(Some(Response::data(
-                    Code::OAuthGetUserInfoError,
-                    None,
-                ))));
-            };
+    return connect_account(
+        google_auth,
+        code,
+        db,
+        config.private_key.clone(),
+        request_ip,
+    )
+    .await;
+}
 
-            let user_data = create_and_update_user_info(
-                db.user.as_ref().unwrap(),
-                Some(ConnectAccount {
-                    account_type: ConnectType::Google,
-                    name: login_user_info.name.clone(),
-                    email: login_user_info.email.clone(),
-                }),
-                &vec![],
-                None,
-                CreateUserInfo {
-                    username: &login_user_info.name,
-                    email: &login_user_info.email,
-                    ip: request_ip.0,
-                    verified_email: login_user_info.verified_email,
-                },
-            )
-            .await
-            .unwrap()
-            .unwrap_or(
-                db.user
-                    .as_ref()
-                    .unwrap()
-                    .find_one(
-                        doc! {
-                            "email": &login_user_info.email
-                        },
-                        None,
-                    )
-                    .await
-                    .unwrap()
-                    .unwrap(),
-            );
+/// # Get Facebook OAuth url
+/// ## Request
+/// - Path `/api/authentication/facebook/url`
+/// - Parameters
+///     - `redirect_uri`
+/// ## Response
+/// - Code
+///     - [Code::Ok]
+/// - Content
+///     - [AuthUrl] - A OAuth url
+#[get("/facebook/url?<redirect_uri>")]
+fn facebook_oauth<'a>(
+    redirect_uri: &'a str,
+    config: &'a State<Config>,
+) -> Json<Response<'a, AuthUrl>> {
+    let facebook_auth = OAuthData::new(
+        &ConnectType::Facebook,
+        &config.facebook_oauth_secret,
+        &config.facebook_oauth_id,
+        &config.issuer,
+        redirect_uri,
+    );
 
-            let token = create_jwt_token(
-                config.private_key.as_bytes(),
-                Claims {
-                    exp: create_exp(60 * 60 * 24 * 7),
-                    username: login_user_info.name,
-                    id: user_data._id.to_string(),
-                    verified_email: login_user_info.verified_email,
-                    modes: vec![UserMode::Student],
-                },
-            )
-            .unwrap();
+    Response::data(
+        Code::Ok,
+        Some(AuthUrl {
+            url: facebook_auth.get_auth_url(),
+        }),
+    )
+}
 
-            // Response token.
-            Ok(Response::data(Code::Ok, Some(Token { token })))
-        }
-        Err(_) => Err(BadRequest(Some(Response::data(Code::OAuthCodeError, None)))),
-    }
+/// # Facebook OAuth2 login
+/// ## Request
+/// - Path `/api/authentication/facebook`
+/// - Parameters
+///     - `code` - A OAuth2 code
+///     - `oauth_redirect_uri` - A OAuth2 redirect uri
+/// ## Response
+/// - Response Code
+///     - [Code::Ok]
+///     - [Code::OAuthCodeError]
+/// - Response Content
+///     - [Token] - A login token.
+/// ## Curl Example
+/// ```bash
+/// curl -X GET http://127.0.0.1:8000/api/user/login?code={code}&oauth_redirect_uri={oauth_redirect_uri}
+/// ```
+#[get("/facebook?<code>&<oauth_redirect_uri>")]
+async fn facebook_oauth_code<'a>(
+    code: String,
+    oauth_redirect_uri: &'a str,
+    config: &'a State<Config>,
+    db: &'a State<Database>,
+    request_ip: RequestIp,
+) -> Result<Json<Response<'a, Token>>, BadRequest<Json<Response<'a, String>>>> {
+    let facebook_auth = OAuthData::new(
+        &ConnectType::Facebook,
+        &config.facebook_oauth_secret,
+        &config.facebook_oauth_id,
+        &config.issuer,
+        oauth_redirect_uri,
+    );
+
+    return connect_account(
+        facebook_auth,
+        code,
+        db,
+        config.private_key.clone(),
+        request_ip,
+    )
+    .await;
 }
 
 /// # User login API
@@ -188,7 +188,7 @@ async fn google_oauth_code<'a>(
 #[post("/user/login", data = "<login_info>")]
 async fn login<'a>(
     login_info: Form<LoginFromData>,
-    db: &'a State<DB>,
+    db: &'a State<Database>,
     config: &'a State<Config>,
 ) -> Result<Json<Response<'a, Token>>, (Status, Json<Response<'a, String>>)> {
     let find_user = if let Some(user_data) = db
@@ -263,7 +263,7 @@ async fn login<'a>(
 #[post("/user/sign-up", data = "<sign_up>")]
 async fn sign_up<'a>(
     sign_up: Form<SignUp>,
-    db: &'a State<DB>,
+    db: &'a State<Database>,
     config: &'a State<Config>,
     request_ip: RequestIp,
 ) -> Result<Json<Response<'a, String>>, Conflict<Json<Response<'a, String>>>> {
@@ -317,7 +317,7 @@ async fn sign_up<'a>(
 
 /// Update user info if it exists else insert
 #[doc(hidden)]
-async fn create_and_update_user_info(
+pub async fn create_and_update_user_info(
     user: &Collection<User>,
     connect: Option<ConnectAccount>,
     modes: &Vec<UserMode>,
@@ -383,7 +383,12 @@ pub fn stage() -> AdHoc {
         rocket
             .mount(
                 "/api/authentication",
-                routes![google_oauth, google_oauth_code],
+                routes![
+                    google_oauth,
+                    google_oauth_code,
+                    facebook_oauth,
+                    facebook_oauth_code
+                ],
             )
             .mount("/api", routes![login, sign_up])
     })

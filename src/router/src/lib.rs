@@ -45,7 +45,7 @@ pub async fn rocket(test: bool) -> Rocket<Build> {
             .await
             .unwrap_or_else(|error| panic!("{:?}", error))
     } else {
-        rocket.manage(database::DB {
+        rocket.manage(database::Database {
             client: None,
             user: None,
         })

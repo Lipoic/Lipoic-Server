@@ -2436,6 +2436,7 @@ name = "util"
 version = "0.1.0"
 dependencies = [
  "bcrypt",
+ "database",
  "jsonwebtoken",
  "lettre",
  "maud",
