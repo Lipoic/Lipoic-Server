@@ -7,7 +7,6 @@ use rocket::serde::Deserialize;
 use rocket::{Build, Rocket};
 
 mod apis;
-mod catch;
 mod data;
 #[doc(hidden)]
 mod db;
@@ -57,7 +56,6 @@ pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load router stage", |rocket| async {
         rocket
             .attach(AdHoc::config::<Config>())
-            .attach(catch::stage())
             .attach(resource::stage())
             .attach(apis::stage())
     })

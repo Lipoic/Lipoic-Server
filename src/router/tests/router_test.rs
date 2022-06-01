@@ -14,18 +14,3 @@ async fn hello_test() {
         r#"{"code":1,"message":"Ok.","data":"hello world!"}"#
     )
 }
-
-#[rocket::async_test]
-async fn not_found_test() {
-    let client = Client::tracked(router::rocket(true).await)
-        .await
-        .expect("valid rocket instance");
-    let req = client.get("/test");
-    let response = rocket::tokio::join!(req.clone().dispatch());
-
-    assert_eq!(response.0.status(), Status::NotFound);
-    assert_eq!(
-        response.0.into_string().await.unwrap(),
-        include_str!("../../../resources/404.html")
-    );
-}
