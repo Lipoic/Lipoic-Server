@@ -22,7 +22,7 @@ async fn notfund_test() {
         .expect("valid rocket instance");
     let req = client.get("/test");
     let response = rocket::tokio::join!(req.clone().dispatch());
-    assert_eq!(response.0.status(), Status::Ok);
+    assert_eq!(response.0.status(), Status::NotFound);
     assert_eq!(
         response.0.into_string().await.unwrap(),
         r#"{"code":404,"message":"Resource not found."}"#
