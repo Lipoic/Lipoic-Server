@@ -155,12 +155,17 @@ impl OAuthData<'_> {
             ConnectType::Facebook => FACEBOOK_TOKEN_URL,
         };
 
-        let response = reqwest::Client::new()
-            .post(token_url)
-            .form(&form_data)
-            .basic_auth(&self.client_id, Some(&self.client_secret))
-            .send()
-            .await?;
+        let client = reqwest::Client::new();
+
+        let builder = match self.account_type {
+            ConnectType::Google => client
+                .post(token_url)
+                .form(&form_data)
+                .basic_auth(&self.client_id, Some(&self.client_secret)),
+            ConnectType::Facebook => client.get(token_url).query(&form_data),
+        };
+
+        let response = builder.send().await?;
 
         response.json::<AccessTokenInfo>().await
     }

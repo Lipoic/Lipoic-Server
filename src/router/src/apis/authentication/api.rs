@@ -324,23 +324,22 @@ pub async fn create_and_update_user_info(
     option.upsert = Some(true);
 
     // insert user info if not exists
-    let user_data = user
-        .find_one_and_update(
-            doc! { "email": &user_info.email },
-            doc! {
-                "$setOnInsert": {
-                    "username": &user_info.username,
-                    "email": &user_info.email,
-                    "verified_email": &user_info.verified_email,
-                    "modes": ["Student"],
-                    "login_ips": [],
-                    "password_hash": password_hash,
-                    "connect": []
-                }
-            },
-            option,
-        )
-        .await?;
+    user.find_one_and_update(
+        doc! { "email": &user_info.email },
+        doc! {
+            "$setOnInsert": {
+                "username": &user_info.username,
+                "email": &user_info.email,
+                "verified_email": &user_info.verified_email,
+                "modes": [],
+                "login_ips": [],
+                "password_hash": password_hash,
+                "connects": []
+            }
+        },
+        option,
+    )
+    .await?;
 
     // add login ip and modes
     user.update_one(
@@ -362,13 +361,17 @@ pub async fn create_and_update_user_info(
             doc! { "email": &user_info.email },
             doc! {
                 "$addToSet": {
-                    "connect": bson::to_bson(&connect).unwrap()
+                    "connects": bson::to_bson(&connect).unwrap()
                 }
             },
             None,
         )
         .await?;
     }
+
+    let user_data = user
+        .find_one(doc! { "email": &user_info.email }, None)
+        .await?;
 
     Ok(user_data)
 }
