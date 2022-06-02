@@ -20,7 +20,7 @@ pub async fn init(mongodb_url: String) -> mongodb::error::Result<Database> {
 
     // Get a handle to the cluster
     let client = Client::with_options(client_options)?;
-    let db = client.database("local");
+    let db = client.database("lipoic_data");
 
     // Ping the server to see if you can connect to the cluster
     client
