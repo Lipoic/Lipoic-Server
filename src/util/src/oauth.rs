@@ -139,11 +139,18 @@ impl OAuthData<'_> {
     ///
     /// return [`AccessTokenInfo`]
     pub async fn authorization_code(&self, code: String) -> Result<AccessTokenInfo, Error> {
+        let mut redirect_uri = self.redirect_uri.to_string();
+
+        // Because Facebook requires "/" at the end of the redirect URL
+        if (matches!(self.account_type, ConnectType::Facebook) && !redirect_uri.ends_with('/')) {
+            redirect_uri = format!("{}/", redirect_uri);
+        }
+
         let mut form_data = vec![
             ("client_id", self.client_id.clone()),
             ("client_secret", self.client_secret.clone()),
             ("code", code),
-            ("redirect_uri", self.redirect_uri.to_string()),
+            ("redirect_uri", redirect_uri),
         ];
 
         if matches!(self.account_type, ConnectType::Google) {
