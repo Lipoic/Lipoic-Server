@@ -6,7 +6,7 @@ use crate::data::code::Code;
 use crate::data::response::Response;
 
 #[catch(404)]
-fn not_found(req: &Request) -> Json<Response<'static, Option<String>>> {
+fn not_found(_req: &Request) -> Json<Response<'static, Option<String>>> {
     Response::data(Code::NotFound, None)
 }
 
