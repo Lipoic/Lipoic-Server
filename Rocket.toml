@@ -50,7 +50,7 @@ google_account_email=""
 google_account_password=""
 
 ## facebook login Oauth2 information
-facebook_oauth_id="742041830163985"
-facebook_oauth_secret="49962a106357552f4acbf6f351924487"
+facebook_oauth_id=""
+facebook_oauth_secret=""
 
 issuer="http://127.0.0.1:8000"
