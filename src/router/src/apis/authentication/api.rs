@@ -26,7 +26,7 @@ use super::util::connect_account;
 
 /// # Get Google OAuth url
 /// ## Request
-/// - Path `/api/authentication/google/url`
+/// - Path `/authentication/google/url`
 /// - Parameters
 ///     - `redirect_uri`
 /// ## Response
@@ -56,7 +56,7 @@ fn google_oauth<'a>(
 
 /// # Google OAuth2 login
 /// ## Request
-/// - Path `/api/authentication/google`
+/// - Path `/authentication/google`
 /// - Parameters
 ///     - `code` - A OAuth2 code
 ///     - `oauth_redirect_uri` - A OAuth2 redirect uri
@@ -68,7 +68,7 @@ fn google_oauth<'a>(
 ///     - [Token] - A login token.
 /// ## Curl Example
 /// ```bash
-/// curl -X GET http://127.0.0.1:8000/api/authentication/google?code={code}&oauth_redirect_uri={oauth_redirect_uri}
+/// curl -X GET http://127.0.0.1:8000/authentication/google?code={code}&oauth_redirect_uri={oauth_redirect_uri}
 /// ```
 #[get("/google?<code>&<oauth_redirect_uri>")]
 async fn google_oauth_code<'a>(
@@ -97,7 +97,7 @@ async fn google_oauth_code<'a>(
 
 /// # Get Facebook OAuth url
 /// ## Request
-/// - Path `/api/authentication/facebook/url`
+/// - Path `/authentication/facebook/url`
 /// - Parameters
 ///     - `redirect_uri`
 /// ## Response
@@ -127,7 +127,7 @@ fn facebook_oauth<'a>(
 
 /// # Facebook OAuth2 login
 /// ## Request
-/// - Path `/api/authentication/facebook`
+/// - Path `/authentication/facebook`
 /// - Parameters
 ///     - `code` - A OAuth2 code
 ///     - `oauth_redirect_uri` - A OAuth2 redirect uri
@@ -139,7 +139,7 @@ fn facebook_oauth<'a>(
 ///     - [Token] - A login token.
 /// ## Curl Example
 /// ```bash
-/// curl -X GET http://127.0.0.1:8000/api/authentication/facebook?code={code}&oauth_redirect_uri={oauth_redirect_uri}
+/// curl -X GET http://127.0.0.1:8000/authentication/facebook?code={code}&oauth_redirect_uri={oauth_redirect_uri}
 /// ```
 #[get("/facebook?<code>&<oauth_redirect_uri>")]
 async fn facebook_oauth_code<'a>(
@@ -168,7 +168,7 @@ async fn facebook_oauth_code<'a>(
 
 /// # User login API
 /// ## Request
-/// - Path `/api/user/login`
+/// - Path `/user/login`
 /// - FromData [LoginFromData]
 /// ## Response
 /// - Code
@@ -179,7 +179,7 @@ async fn facebook_oauth_code<'a>(
 ///     - [Token] - A JWT token.
 /// ## Curl Example
 /// ```bash
-/// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 http://127.0.0.1:8000/api/user/login
+/// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 http://127.0.0.1:8000/user/login
 /// ```
 #[post("/user/login", data = "<login_info>")]
 async fn login<'a>(
@@ -244,7 +244,7 @@ async fn login<'a>(
 
 /// # Sign up account API
 /// ## Request
-/// - Path `/api/user/sign-up`
+/// - Path `/user/sign-up`
 /// - FromData [SignUp]
 /// ## Response
 /// - Code
@@ -254,7 +254,7 @@ async fn login<'a>(
 ///     - [Code::Ok]
 /// ## Curl Example
 /// ```bash
-/// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 -F username=abc -F modes='["Student"]' http://127.0.0.1:8000/api/user/sign-up
+/// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 -F username=abc -F modes='["Student"]' http://127.0.0.1:8000/user/sign-up
 /// ```
 #[post("/user/sign-up", data = "<sign_up>")]
 async fn sign_up<'a>(
@@ -378,7 +378,7 @@ pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load authentication stage", |rocket| async {
         rocket
             .mount(
-                "/api/authentication",
+                "/authentication",
                 routes![
                     google_oauth,
                     google_oauth_code,
@@ -386,6 +386,6 @@ pub fn stage() -> AdHoc {
                     facebook_oauth_code
                 ],
             )
-            .mount("/api", routes![login, sign_up])
+            .mount("/", routes![login, sign_up])
     })
 }

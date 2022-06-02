@@ -10,7 +10,7 @@ use rocket::State;
 
 /// # Get login user info
 /// ## Request
-/// - Path `/api/user/info`
+/// - Path `/user/info`
 /// - [X] Authorization
 /// ## Response
 /// - Code
@@ -21,7 +21,7 @@ use rocket::State;
 ///     - [UserInfo]
 /// ## Curl Example
 /// ```bash
-/// curl -X GET -H "Authorization: Bearer {Token}" http://127.0.0.1:8000/api/user/info
+/// curl -X GET -H "Authorization: Bearer {Token}" http://127.0.0.1:8000/user/info
 /// ```
 #[get("/info")]
 async fn user_info(
@@ -66,6 +66,6 @@ async fn user_info(
 #[doc(hidden)]
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load api stage", |rocket| async {
-        rocket.mount("/api/user", routes![user_info])
+        rocket.mount("/user", routes![user_info])
     })
 }

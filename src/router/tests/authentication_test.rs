@@ -7,7 +7,7 @@ async fn google_oauth_url() {
         .await
         .expect("valid rocket instance");
     let req = client
-        .get("/api/authentication/google/url?redirect_uri=http://127.0.0.1/login/oauth/google");
+        .get("/authentication/google/url?redirect_uri=http://127.0.0.1/login/oauth/google");
     let response = rocket::tokio::join!(req.clone().dispatch());
 
     assert_eq!(response.0.status(), Status::Ok);
@@ -23,7 +23,7 @@ async fn facebook_oauth_url() {
         .await
         .expect("valid rocket instance");
     let req = client
-        .get("/api/authentication/facebook/url?redirect_uri=http://127.0.0.1/login/oauth/facebook");
+        .get("/authentication/facebook/url?redirect_uri=http://127.0.0.1/login/oauth/facebook");
     let response = rocket::tokio::join!(req.clone().dispatch());
 
     assert_eq!(response.0.status(), Status::Ok);
