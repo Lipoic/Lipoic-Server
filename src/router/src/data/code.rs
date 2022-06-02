@@ -26,13 +26,15 @@ pub struct Code<'a> {
 
 impl Code<'_> {
     generate_code! {
-        Ok => 1, "Ok.",
-        OAuthCodeError => 3, "OAuth auth code error.",
-        OAuthGetUserInfoError => 4, "OAuth get user info error.",
-        LoginUserNotFoundError => 5, "User not found error.",
-        LoginPasswordError => 6, "Input password error.",
-        SignUpEmailAlreadyRegistered => 7, "This email is already registered.",
-        VerifyEmailError => 8, "This code is invalid.",
-        AuthError => 9, "This token is invalid."
+        Ok => 200, "Ok.",
+        NotFound => 404, "Resource not found.",
+
+        OAuthCodeError => 1, "OAuth auth code error.",
+        OAuthGetUserInfoError => 2, "OAuth get user info error.",
+        LoginUserNotFoundError => 3, "User not found error.",
+        LoginPasswordError => 4, "Input password error.",
+        SignUpEmailAlreadyRegistered => 5, "This email is already registered.",
+        VerifyEmailError => 6, "This code is invalid.",
+        AuthError => 7, "This token is invalid."
     }
 }

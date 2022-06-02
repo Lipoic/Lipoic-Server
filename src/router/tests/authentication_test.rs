@@ -13,7 +13,7 @@ async fn google_oauth_url() {
     assert_eq!(response.0.status(), Status::Ok);
     assert_eq!(
         response.0.into_string().await.unwrap(),
-        r#"{"code":1,"message":"Ok.","data":{"url":"https://accounts.google.com/o/oauth2/auth?client_id=&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&redirect_uri=http%3A%2F%2F127.0.0.1%2Flogin%2Foauth%2Fgoogle"}}"#
+        r#"{"code":200,"message":"Ok.","data":{"url":"https://accounts.google.com/o/oauth2/auth?client_id=&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&redirect_uri=http%3A%2F%2F127.0.0.1%2Flogin%2Foauth%2Fgoogle"}}"#
     );
 }
 
@@ -29,6 +29,6 @@ async fn facebook_oauth_url() {
     assert_eq!(response.0.status(), Status::Ok);
     assert_eq!(
         response.0.into_string().await.unwrap(),
-        r#"{"code":1,"message":"Ok.","data":{"url":"https://www.facebook.com/dialog/oauth?client_id=&response_type=code&scope=public_profile%2Cemail&redirect_uri=http%3A%2F%2F127.0.0.1%2Flogin%2Foauth%2Ffacebook"}}"#
+        r#"{"code":200,"message":"Ok.","data":{"url":"https://www.facebook.com/dialog/oauth?client_id=&response_type=code&scope=public_profile%2Cemail&redirect_uri=http%3A%2F%2F127.0.0.1%2Flogin%2Foauth%2Ffacebook"}}"#
     );
 }
