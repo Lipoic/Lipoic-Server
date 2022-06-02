@@ -165,10 +165,7 @@ impl OAuthData<'_> {
         let client = reqwest::Client::new();
 
         let builder = match self.account_type {
-            ConnectType::Google => client
-                .post(token_url)
-                .form(&form_data)
-                .basic_auth(&self.client_id, Some(&self.client_secret)),
+            ConnectType::Google => client.post(token_url).form(&form_data),
             ConnectType::Facebook => client.get(token_url).query(&form_data),
         };
 
