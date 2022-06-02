@@ -11,6 +11,6 @@ pub fn stage() -> AdHoc {
         rocket
             .attach(authentication::api::stage())
             .attach(verify_email::stage())
-            .attach(user::stage())
+            .attach(user::api::stage())
     })
 }

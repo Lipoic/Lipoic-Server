@@ -1,6 +1,7 @@
 use database::{
     doc,
-    model::auth::user::{ConnectAccount, UserMode},
+    model::auth::user::{ConnectAccount, User, UserMode},
+    mongodb::bson,
     Database,
 };
 use rocket::{response::status::BadRequest, serde::json::Json, State};
@@ -12,10 +13,9 @@ use crate::data::{
     response::Response,
 };
 
-use super::{
-    api::create_and_update_user_info,
-    data::{CreateUserInfo, RequestIp},
-};
+use super::data::{CreateUserInfo, RequestIp};
+use database::mongodb::options::FindOneAndUpdateOptions;
+use database::{Collection, Error};
 
 pub async fn connect_account<'a>(
     oauth: OAuthData<'_>,
@@ -86,4 +86,69 @@ pub async fn connect_account<'a>(
         }
         Err(_) => Err(BadRequest(Some(Response::data(Code::OAuthCodeError, None)))),
     }
+}
+
+/// Update user info if it exists else insert
+#[doc(hidden)]
+pub async fn create_and_update_user_info(
+    user: &Collection<User>,
+    connect: Option<ConnectAccount>,
+    modes: &Vec<UserMode>,
+    password_hash: Option<String>,
+    user_info: CreateUserInfo<'_>,
+) -> Result<Option<User>, Error> {
+    let mut option = FindOneAndUpdateOptions::default();
+    option.upsert = Some(true);
+
+    // insert user info if not exists
+    user.find_one_and_update(
+        doc! { "email": &user_info.email },
+        doc! {
+            "$setOnInsert": {
+                "username": &user_info.username,
+                "email": &user_info.email,
+                "verified_email": &user_info.verified_email,
+                "modes": [],
+                "login_ips": [],
+                "password_hash": password_hash,
+                "connects": []
+            }
+        },
+        option,
+    )
+    .await?;
+
+    // add login ip and modes
+    user.update_one(
+        doc! { "email": &user_info.email },
+        doc! {
+            "$addToSet": {
+                "login_ips": &user_info.ip,
+                "modes": {
+                    "$each": bson::to_bson(&modes).unwrap()
+                },
+            }
+        },
+        None,
+    )
+    .await?;
+
+    if let Some(connect) = connect {
+        user.update_one(
+            doc! { "email": &user_info.email },
+            doc! {
+                "$addToSet": {
+                    "connects": bson::to_bson(&connect).unwrap()
+                }
+            },
+            None,
+        )
+        .await?;
+    }
+
+    let user_data = user
+        .find_one(doc! { "email": &user_info.email }, None)
+        .await?;
+
+    Ok(user_data)
 }
