@@ -4,9 +4,9 @@ use rocket::{
 };
 
 #[doc(hidden)]
-pub struct CreateUserInfo<'a> {
-    pub username: &'a String,
-    pub email: &'a String,
+pub struct CreateUserInfo {
+    pub username: String,
+    pub email: String,
     pub verified_email: bool,
     pub ip: String,
 }

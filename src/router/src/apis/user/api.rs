@@ -35,11 +35,11 @@ use util::util::create_exp;
 /// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 http://127.0.0.1:8000/user/login
 /// ```
 #[post("/login", data = "<login_info>")]
-async fn login<'a>(
+async fn login(
     login_info: Form<LoginFromData>,
-    db: &'a State<Database>,
-    config: &'a State<Config>,
-) -> Result<Json<Response<'a, Token>>, (Status, Json<Response<'a, String>>)> {
+    db: &State<Database>,
+    config: &State<Config>,
+) -> Result<Json<Response<Token>>, (Status, Json<Response<String>>)> {
     let find_user = if let Some(user_data) = db
         .user
         .as_ref()
@@ -58,7 +58,7 @@ async fn login<'a>(
         // Response user not found.
         return Err((
             Status::Unauthorized,
-            Response::data(Code::LoginUserNotFoundError, None),
+            Response::new(Code::LoginUserNotFoundError, None),
         ));
     };
 
@@ -78,19 +78,19 @@ async fn login<'a>(
             .unwrap();
 
             // Response JWT.
-            Ok(Response::data(Code::Ok, Some(Token { token })))
+            Ok(Response::new(Code::Ok, Some(Token { token })))
         } else {
             // Response input password error.
             Err((
                 Status::Unauthorized,
-                Response::data(Code::LoginPasswordError, None),
+                Response::new(Code::LoginPasswordError, None),
             ))
         }
     } else {
         // Response input password error.
         Err((
             Status::Unauthorized,
-            Response::data(Code::LoginPasswordError, None),
+            Response::new(Code::LoginPasswordError, None),
         ))
     }
 }
@@ -110,22 +110,22 @@ async fn login<'a>(
 /// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 -F username=abc -F modes='["Student"]' http://127.0.0.1:8000/user/sign-up
 /// ```
 #[post("/sign-up", data = "<sign_up>")]
-async fn sign_up<'a>(
+async fn sign_up(
     sign_up: Form<SignUp>,
-    db: &'a State<Database>,
-    config: &'a State<Config>,
+    db: &State<Database>,
+    config: &State<Config>,
     request_ip: RequestIp,
-) -> Result<Json<Response<'a, String>>, Conflict<Json<Response<'a, String>>>> {
+) -> Result<Json<Response<String>>, Conflict<Json<Response<String>>>> {
     let password_hash = password_hash(&sign_up.password).unwrap();
 
     let user_data = create_and_update_user_info(
         db.user.as_ref().unwrap(),
         None,
-        &sign_up.modes.0,
+        sign_up.modes.0.clone(),
         Some(password_hash),
         CreateUserInfo {
-            username: &sign_up.username,
-            email: &sign_up.email,
+            username: sign_up.username.clone(),
+            email: sign_up.email.clone(),
             ip: request_ip.0,
             verified_email: false,
         },
@@ -154,10 +154,10 @@ async fn sign_up<'a>(
         );
 
         // Response Ok.
-        Ok(Response::data(Code::Ok, None))
+        Ok(Response::new(Code::Ok, None))
     } else {
         // Response email is already registered.
-        Err(Conflict(Some(Response::data(
+        Err(Conflict(Some(Response::new(
             Code::SignUpEmailAlreadyRegistered,
             None,
         ))))
@@ -183,7 +183,7 @@ async fn sign_up<'a>(
 async fn user_info(
     login_user_data: Result<LoginUserData, AuthError>,
     db: &State<Database>,
-) -> Result<Json<Response<'static, UserInfo>>, AuthError> {
+) -> Result<Json<Response<UserInfo>>, AuthError> {
     let login_user_data = match login_user_data {
         Ok(login_user_data) => login_user_data,
         Err(err) => return Err(err),
@@ -202,7 +202,7 @@ async fn user_info(
         .unwrap();
 
     if let Some(user_info) = find_user_data {
-        Ok(Response::data(
+        Ok(Response::new(
             Code::Ok,
             Some(UserInfo {
                 username: user_info.username,
@@ -212,7 +212,7 @@ async fn user_info(
             }),
         ))
     } else {
-        Err(Unauthorized(Some(Response::data(
+        Err(Unauthorized(Some(Response::new(
             Code::LoginUserNotFoundError,
             None,
         ))))

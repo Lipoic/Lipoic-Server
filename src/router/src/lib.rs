@@ -13,7 +13,7 @@ mod data;
 mod db;
 mod resource;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 #[serde(crate = "rocket::serde")]
 #[doc(hidden)]
 pub struct Config {

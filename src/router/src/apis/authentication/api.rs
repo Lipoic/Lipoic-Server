@@ -28,18 +28,15 @@ use super::util::connect_account;
 /// - Content
 ///     - [AuthUrl] - A OAuth url
 #[get("/google/url?<redirect_uri>")]
-fn google_oauth<'a>(
-    redirect_uri: &'a str,
-    config: &'a State<Config>,
-) -> Json<Response<'a, AuthUrl>> {
-    let google_auth = OAuthData::new(
-        &ConnectType::Google,
-        &config.google_oauth_secret,
-        &config.google_oauth_id,
+fn google_oauth(redirect_uri: String, config: &State<Config>) -> Json<Response<AuthUrl>> {
+    let google_auth = OAuthData {
+        account_type: ConnectType::Google,
+        client_secret: config.google_oauth_secret.clone(),
+        client_id: config.google_oauth_id.clone(),
         redirect_uri,
-    );
+    };
 
-    Response::data(
+    Response::new(
         Code::Ok,
         Some(AuthUrl {
             url: google_auth.get_auth_url(),
@@ -64,28 +61,28 @@ fn google_oauth<'a>(
 /// curl -X GET http://127.0.0.1:8000/authentication/google?code={code}&oauth_redirect_uri={oauth_redirect_uri}
 /// ```
 #[get("/google?<code>&<oauth_redirect_uri>")]
-async fn google_oauth_code<'a>(
+async fn google_oauth_code(
     code: String,
-    oauth_redirect_uri: &'a str,
-    config: &'a State<Config>,
-    db: &'a State<Database>,
+    oauth_redirect_uri: String,
+    config: &State<Config>,
+    db: &State<Database>,
     request_ip: RequestIp,
-) -> Result<Json<Response<'a, Token>>, BadRequest<Json<Response<'a, String>>>> {
-    let google_auth = OAuthData::new(
-        &ConnectType::Google,
-        &config.google_oauth_secret,
-        &config.google_oauth_id,
-        oauth_redirect_uri,
-    );
+) -> Result<Json<Response<Token>>, BadRequest<Json<Response<String>>>> {
+    let google_auth = OAuthData {
+        account_type: ConnectType::Google,
+        client_secret: config.google_oauth_secret.clone(),
+        client_id: config.google_oauth_id.clone(),
+        redirect_uri: oauth_redirect_uri,
+    };
 
-    return connect_account(
+    connect_account(
         google_auth,
         code,
         db,
         config.private_key.clone(),
         request_ip,
     )
-    .await;
+    .await
 }
 
 /// # Get Facebook OAuth url
@@ -99,18 +96,15 @@ async fn google_oauth_code<'a>(
 /// - Content
 ///     - [AuthUrl] - A OAuth url
 #[get("/facebook/url?<redirect_uri>")]
-fn facebook_oauth<'a>(
-    redirect_uri: &'a str,
-    config: &'a State<Config>,
-) -> Json<Response<'a, AuthUrl>> {
-    let facebook_auth = OAuthData::new(
-        &ConnectType::Facebook,
-        &config.facebook_oauth_secret,
-        &config.facebook_oauth_id,
-        redirect_uri,
-    );
+fn facebook_oauth(redirect_uri: String, config: &State<Config>) -> Json<Response<AuthUrl>> {
+    let facebook_auth = OAuthData {
+        account_type: ConnectType::Facebook,
+        client_secret: config.facebook_oauth_secret.clone(),
+        client_id: config.facebook_oauth_id.clone(),
+        redirect_uri: redirect_uri,
+    };
 
-    Response::data(
+    Response::new(
         Code::Ok,
         Some(AuthUrl {
             url: facebook_auth.get_auth_url(),
@@ -135,28 +129,28 @@ fn facebook_oauth<'a>(
 /// curl -X GET http://127.0.0.1:8000/authentication/facebook?code={code}&oauth_redirect_uri={oauth_redirect_uri}
 /// ```
 #[get("/facebook?<code>&<oauth_redirect_uri>")]
-async fn facebook_oauth_code<'a>(
+async fn facebook_oauth_code(
     code: String,
-    oauth_redirect_uri: &'a str,
-    config: &'a State<Config>,
-    db: &'a State<Database>,
+    oauth_redirect_uri: String,
+    config: &State<Config>,
+    db: &State<Database>,
     request_ip: RequestIp,
-) -> Result<Json<Response<'a, Token>>, BadRequest<Json<Response<'a, String>>>> {
-    let facebook_auth = OAuthData::new(
-        &ConnectType::Facebook,
-        &config.facebook_oauth_secret,
-        &config.facebook_oauth_id,
-        oauth_redirect_uri,
-    );
+) -> Result<Json<Response<Token>>, BadRequest<Json<Response<String>>>> {
+    let facebook_auth = OAuthData {
+        account_type: ConnectType::Facebook,
+        client_secret: config.facebook_oauth_secret.clone(),
+        client_id: config.facebook_oauth_id.clone(),
+        redirect_uri: oauth_redirect_uri,
+    };
 
-    return connect_account(
+    connect_account(
         facebook_auth,
         code,
         db,
         config.private_key.clone(),
         request_ip,
     )
-    .await;
+    .await
 }
 
 #[doc(hidden)]

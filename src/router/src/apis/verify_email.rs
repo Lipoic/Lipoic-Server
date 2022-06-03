@@ -11,11 +11,11 @@ use util::email::VerifyEmailClaims;
 use util::jwt::verify_token;
 
 #[get("/verify-email?<code>")]
-async fn verify_email<'a>(
+async fn verify_email(
     code: String,
-    config: &'a State<Config>,
-    db: &'a State<Database>,
-) -> Result<Redirect, Unauthorized<Json<Response<'a, String>>>> {
+    config: &State<Config>,
+    db: &State<Database>,
+) -> Result<Redirect, Unauthorized<Json<Response<String>>>> {
     if let Ok(verify_user_data) =
         verify_token::<VerifyEmailClaims>(code, config.public_key.as_bytes())
     {
@@ -36,7 +36,7 @@ async fn verify_email<'a>(
 
         Ok(Redirect::to("/"))
     } else {
-        Err(Unauthorized(Some(Response::data(
+        Err(Unauthorized(Some(Response::new(
             Code::VerifyEmailError,
             None,
         ))))

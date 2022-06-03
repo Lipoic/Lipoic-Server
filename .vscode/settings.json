@@ -1,5 +1,6 @@
 {
-  "yaml.schemas": {
-    "https://json.schemastore.org/github-workflow.json": "file:///run/media/siongsng/Data/coding/Github/Lipoic-Server/.github/workflows/deploy.yml"
-  }
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": "file:///run/media/siongsng/Data/coding/Github/Lipoic-Server/.github/workflows/deploy.yml"
+    },
+    "cSpell.words": ["upsert"]
 }

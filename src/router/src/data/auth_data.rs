@@ -57,7 +57,16 @@ pub struct LoginUserData {
     pub(crate) modes: Vec<UserMode>,
 }
 
-pub type AuthError = Unauthorized<Json<Response<'static, String>>>;
+pub type AuthError = Unauthorized<Json<Response<String>>>;
+
+impl LoginUserData {
+    fn unauthorized() -> Outcome<Self, AuthError> {
+        Outcome::Failure((
+            Status::Unauthorized,
+            Unauthorized(Some(Response::new(Code::AuthError, None))),
+        ))
+    }
+}
 
 #[rocket::async_trait]
 #[doc(hidden)]
@@ -65,38 +74,39 @@ impl<'r> FromRequest<'r> for LoginUserData {
     type Error = AuthError;
 
     async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        let authorization = request.headers().get_one("Authorization");
-        if let Some(token) = authorization {
-            let token_info = token.split(' ').collect::<Vec<&str>>();
-            let token_type = token_info.get(0);
-            let token_content = token_info.get(1);
-
-            if let Some(_token_type @ &"Bearer") = token_type {
-                if let Some(token_content) = token_content {
-                    // get rocket config
-                    let config = request
-                        .guard::<&'r State<Config>>()
-                        .await
-                        .succeeded()
-                        .unwrap();
-                    if let Ok(user_data) = verify_token::<Claims>(
-                        token_content.to_string(),
-                        config.public_key.as_bytes(),
-                    ) {
-                        return Outcome::Success(LoginUserData {
-                            id: user_data.claims.id,
-                            username: user_data.claims.username,
-                            modes: user_data.claims.modes,
-                            verified_email: user_data.claims.verified_email,
-                        });
-                    }
-                }
+        let token = match request.headers().get_one("Authorization") {
+            Some(v) => v,
+            None => {
+                return LoginUserData::unauthorized();
             }
+        };
+
+        let token_info = token.split(' ').collect::<Vec<_>>();
+        if token_info.len() < 2 {
+            return LoginUserData::unauthorized();
         }
 
-        Outcome::Failure((
-            Status::Unauthorized,
-            Unauthorized(Some(Response::data(Code::AuthError, None))),
-        ))
+        let token_type = *token_info.get(0).unwrap();
+        if token_type != "Bearer" {
+            return LoginUserData::unauthorized();
+        }
+
+        let token_content = token_info.get(1).unwrap().to_string();
+
+        // get rocket config
+        let config = request.guard::<&State<Config>>().await.succeeded().unwrap();
+
+        return if let Ok(user_data) =
+            verify_token::<Claims>(token_content, config.public_key.as_bytes())
+        {
+            Outcome::Success(LoginUserData {
+                id: user_data.claims.id,
+                username: user_data.claims.username,
+                modes: user_data.claims.modes,
+                verified_email: user_data.claims.verified_email,
+            })
+        } else {
+            LoginUserData::unauthorized()
+        };
     }
 }

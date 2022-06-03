@@ -4,8 +4,8 @@ use rocket::fairing::AdHoc;
 use rocket::serde::json::Json;
 
 #[get("/")]
-fn hello_world() -> Json<Response<'static, String>> {
-    Response::data(Code::Ok, Some(String::from("hello world!")))
+fn hello_world() -> Json<Response<String>> {
+    Response::new(Code::Ok, Some(String::from("hello world!")))
 }
 
 #[doc(hidden)]

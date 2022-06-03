@@ -11,11 +11,11 @@ const FACEBOOK_AUTH_URL: &str = "https://www.facebook.com/dialog/oauth";
 const FACEBOOK_TOKEN_URL: &str = "https://graph.facebook.com/v14.0/oauth/access_token";
 const FACEBOOK_USER_INFO: &str = "https://graph.facebook.com/v14.0";
 
-pub struct OAuthData<'a> {
-    pub account_type: &'a ConnectType,
-    pub client_secret: &'a String,
-    pub client_id: &'a String,
-    pub redirect_uri: &'a str,
+pub struct OAuthData {
+    pub account_type: ConnectType,
+    pub client_secret: String,
+    pub client_id: String,
+    pub redirect_uri: String,
 }
 
 #[derive(Deserialize)]
@@ -97,21 +97,7 @@ impl OAuthAccountInfo {
     }
 }
 
-impl OAuthData<'_> {
-    pub fn new<'a>(
-        account_type: &'a ConnectType,
-        client_secret: &'a String,
-        client_id: &'a String,
-        redirect_uri: &'a str,
-    ) -> OAuthData<'a> {
-        OAuthData {
-            account_type,
-            client_secret,
-            client_id,
-            redirect_uri,
-        }
-    }
-
+impl OAuthData {
     /// get google oauth url
     ///
     /// return one url [`String`]
@@ -131,7 +117,7 @@ impl OAuthData<'_> {
             auth_url,
             self.client_id,
             encode(scope),
-            encode(self.redirect_uri)
+            encode(&self.redirect_uri)
         )
     }
 

@@ -1,19 +1,19 @@
 use rocket::serde::json::Json;
 use rocket::serde::ser::SerializeStruct;
-use rocket::serde::Serialize;
+use rocket::serde::{Serialize, Serializer};
 
 use crate::data::code::Code;
 
 #[derive(Debug)]
-pub struct Response<'a, T> {
-    pub code: Code<'a>,
+pub struct Response<T> {
+    pub code: Code,
     pub data: Option<T>,
 }
 
-impl<T: rocket::serde::Serialize> Serialize for Response<'_, T> {
+impl<T: Serialize> Serialize for Response<T> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        S: rocket::serde::Serializer,
+        S: Serializer,
     {
         let mut state = serializer.serialize_struct("response", 3)?;
 
@@ -29,8 +29,8 @@ impl<T: rocket::serde::Serialize> Serialize for Response<'_, T> {
     }
 }
 
-impl<T> Response<'_, T> {
-    pub fn data(code: Code, data: Option<T>) -> Json<Response<T>> {
+impl<T> Response<T> {
+    pub fn new(code: Code, data: Option<T>) -> Json<Response<T>> {
         Response { code, data }.into()
     }
 }
