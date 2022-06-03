@@ -101,7 +101,7 @@ fn facebook_oauth(redirect_uri: String, config: &State<Config>) -> Json<Response
         account_type: ConnectType::Facebook,
         client_secret: config.facebook_oauth_secret.clone(),
         client_id: config.facebook_oauth_id.clone(),
-        redirect_uri: redirect_uri,
+        redirect_uri,
     };
 
     Response::new(
