@@ -42,8 +42,7 @@ EQIDAQAB
 ";
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Claims {
-    /// Required (validate_exp defaults to true in validation). Expiration time (as UTC timestamp)
+struct Claims {
     pub exp: usize,
     pub username: String,
     pub verified_email: bool,
