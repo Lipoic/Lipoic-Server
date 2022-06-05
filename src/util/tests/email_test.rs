@@ -1,15 +1,8 @@
-[global]
-# Base Config
+use util::email::VerifyEmailClaims;
+use util::jwt::{create_jwt_token, verify_token};
+use util::util::create_exp;
 
-address = "0.0.0.0"
-port = 8000
-mongodb_url = "mongodb://root:root_password@localhost:27017/"
-issuer = "http://127.0.0.1:8000"
-
-# Auth Config
-
-# JWT keys
-private_key = """-----BEGIN RSA PRIVATE KEY-----
+const PRIVATE_KEY: &str = "-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEAu7GM38CWWJUdVtZzjukVN2VdIwTOiP1YMadzc3wI5K8cT98O
 iDcGw662/Y9JYwKZX4Vjgu7HNyoLQPstUMGuqZ8eIYkUM10Ny8dMoQz9jwbC2bXW
 sXw/+homUbs9uApYZfnvOTcc2QaABsNBpgikA4RqdpFxkVx5SkCrfxWYR8T8np15
@@ -35,8 +28,9 @@ Q/iMdUxwBVORVr8igt7xdRetEdPk50Qvp8xDxmE7U5PMIch9fbzOHF1U4S0xvcx7
 Y57goQKBgQCcV/iqPE/aLHdhjkVVfnru8yEzhOrGdMZ/S1wDPlRK4z/knOxXY45W
 zWCbL713fo8oBG78RvrGQOgypxqY7a/oKlMzwdsgZFF2pIDi4X6u0W0wCA70AV6P
 UuovMB0XVn5QV7s82DLYoP67OUF5r8WOtiR2D78B+dvqb7bX5DUw8Q==
------END RSA PRIVATE KEY-----"""
-public_key = """-----BEGIN PUBLIC KEY-----
+-----END RSA PRIVATE KEY-----
+";
+const PUBLIC_KEY: &str = "-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu7GM38CWWJUdVtZzjukV
 N2VdIwTOiP1YMadzc3wI5K8cT98OiDcGw662/Y9JYwKZX4Vjgu7HNyoLQPstUMGu
 qZ8eIYkUM10Ny8dMoQz9jwbC2bXWsXw/+homUbs9uApYZfnvOTcc2QaABsNBpgik
@@ -45,15 +39,22 @@ i/TE3LH9tfbMonnxQJ6ah0GJ0PFmM5zRC+WJFlyffdv0NgVNtEcGoioeTcidjspP
 Vc5QUEf9rKd1vIUwmAdY+oBzJqVU2ppFxqms1qNzPtB3wlkCLKyWq+pOP/8o3Q7l
 EQIDAQAB
 -----END PUBLIC KEY-----
-"""
+";
 
-# Google OAuth
-google_oauth_id = ""
-google_oauth_secret = ""
-# Google email password and and mail address
-google_account_email = ""
-google_account_password = ""
+#[test]
+fn verify_email_test() {
+    let code = create_jwt_token(
+        PRIVATE_KEY.as_bytes(),
+        VerifyEmailClaims {
+            exp: create_exp(60 * 5),
+            email: "123".to_string(),
+        },
+    )
+    .unwrap();
 
-## Facebook login OAuth
-facebook_oauth_id = ""
-facebook_oauth_secret = ""
+    let data = verify_token::<VerifyEmailClaims>(code, PUBLIC_KEY.as_bytes())
+        .unwrap()
+        .claims;
+
+    assert_eq!(data.email.as_str(), "123");
+}

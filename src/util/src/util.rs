@@ -1,3 +1,10 @@
-pub fn get_string(opt: &Option<&'static str>) -> Option<String> {
-    opt.and_then(|v| Some(v.to_string()))
+use std::time::{SystemTime, UNIX_EPOCH};
+
+// Expiration time
+pub fn create_exp(time: usize) -> usize {
+    (SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("Time went backwards")
+        .as_secs() as usize)
+        + time
 }

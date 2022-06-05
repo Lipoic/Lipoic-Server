@@ -1,19 +1,16 @@
+use crate::data::code::Code;
 use crate::data::response::Response;
 use rocket::fairing::AdHoc;
 use rocket::serde::json::Json;
 
 #[get("/")]
-fn hello_world() -> Json<Response> {
-    Response::default().ok(&Some("hello world!")).into()
+fn hello_world() -> Json<Response<String>> {
+    Response::new(Code::Ok, Some(String::from("hello world!")))
 }
 
-#[get("/teapot")]
-fn teapot() -> Json<Response> {
-    Response::default().teapot(&Some("I'm a teapot!")).into()
-}
-
+#[doc(hidden)]
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("catch stage", |rocket| async {
-        rocket.mount("/", routes![hello_world, teapot])
+        rocket.mount("/", routes![hello_world])
     })
 }

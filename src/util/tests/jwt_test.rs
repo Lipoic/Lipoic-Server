@@ -1,5 +1,6 @@
+use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
-use util::jwt::{create_jwt_token, verify_token, Claims};
+use util::jwt::{create_jwt_token, verify_token};
 
 const PRIVATE_KEY: &str = "-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEAu7GM38CWWJUdVtZzjukVN2VdIwTOiP1YMadzc3wI5K8cT98O
@@ -40,13 +41,30 @@ EQIDAQAB
 -----END PUBLIC KEY-----
 ";
 
+#[derive(Debug, Serialize, Deserialize)]
+struct Claims {
+    pub exp: usize,
+    pub username: String,
+    pub verified_email: bool,
+    pub id: String,
+}
+
 #[test]
 fn create_jwt_token_test() {
     let exp = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("Time went backwards")
         .as_secs();
-    let token = create_jwt_token(PRIVATE_KEY.as_bytes(), Claims { exp: exp as usize }).unwrap();
+    let token = create_jwt_token(
+        PRIVATE_KEY.as_bytes(),
+        Claims {
+            exp: exp as usize,
+            username: "".to_string(),
+            verified_email: false,
+            id: "".to_string(),
+        },
+    )
+    .unwrap();
 
-    verify_token(token.clone(), PUBLIC_KEY.as_bytes()).unwrap();
+    verify_token::<Claims>(token, PUBLIC_KEY.as_bytes()).unwrap();
 }

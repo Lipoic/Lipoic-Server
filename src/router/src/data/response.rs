@@ -1,55 +1,36 @@
+use rocket::serde::json::Json;
 use rocket::serde::ser::SerializeStruct;
-use rocket::serde::Serialize;
-use rocket::{http::Status, Request};
+use rocket::serde::{Serialize, Serializer};
 
-use util::util::get_string;
+use crate::data::code::Code;
 
-#[derive(Debug, Default)]
-pub struct Response {
-    pub code: u16,
-    pub description: Option<String>,
-    pub debug_db_names: Option<Vec<String>>,
+#[derive(Debug)]
+pub struct Response<T> {
+    pub code: Code,
+    pub data: Option<T>,
 }
-impl Serialize for Response {
+
+impl<T: Serialize> Serialize for Response<T> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
-        S: rocket::serde::Serializer,
+        S: Serializer,
     {
         let mut state = serializer.serialize_struct("response", 3)?;
 
-        state.serialize_field("code", &self.code)?;
+        state.serialize_field("code", &self.code.code)?;
 
-        self.description
-            .as_ref()
-            .and_then(|v| state.serialize_field("description", &v).ok());
+        state.serialize_field("message", &self.code.message)?;
 
-        self.debug_db_names
+        self.data
             .as_ref()
-            .and_then(|v| state.serialize_field("debug_db_names", &v).ok());
+            .and_then(|value| state.serialize_field("data", &value).ok());
 
         state.end()
     }
 }
 
-impl Response {
-    pub fn ok(mut self, response: &Option<&'static str>) -> Self {
-        self.code = Status::Ok.code;
-        self.description = get_string(response);
-
-        self
-    }
-
-    pub fn teapot(mut self, response: &Option<&'static str>) -> Self {
-        self.code = Status::ImATeapot.code;
-        self.description = get_string(response);
-
-        self
-    }
-
-    pub fn not_found(mut self, req: &Request) -> Self {
-        self.code = Status::NotFound.code;
-        self.description = Some(format!("The requested page is invalid: {}", req.uri()));
-
-        self
+impl<T> Response<T> {
+    pub fn new(code: Code, data: Option<T>) -> Json<Response<T>> {
+        Response { code, data }.into()
     }
 }
