@@ -1,8 +1,12 @@
-[release]
-address = "0.0.0.0"
+[global]
+# Base Config
 
-[debug]
+address = "0.0.0.0"
+port = 8000
 mongodb_url = "mongodb://root:root_password@localhost:27017/"
+issuer = "http://127.0.0.1:8000"
+
+# Auth Config
 
 # JWT keys
 private_key = """-----BEGIN RSA PRIVATE KEY-----
@@ -42,15 +46,14 @@ Vc5QUEf9rKd1vIUwmAdY+oBzJqVU2ppFxqms1qNzPtB3wlkCLKyWq+pOP/8o3Q7l
 EQIDAQAB
 -----END PUBLIC KEY-----
 """
-# google OAuth2 information
-google_oauth_id=""
-google_oauth_secret=""
-# google email password and and mail address
-google_account_email=""
-google_account_password=""
 
-## facebook login Oauth2 information
-facebook_oauth_id=""
-facebook_oauth_secret=""
+# Google OAuth
+google_oauth_id = ""
+google_oauth_secret = ""
+# Google email password and and mail address
+google_account_email = ""
+google_account_password = ""
 
-issuer="http://127.0.0.1:8000"
+## Facebook login OAuth
+facebook_oauth_id = ""
+facebook_oauth_secret = ""
