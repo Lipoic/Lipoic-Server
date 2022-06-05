@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Auth",""],["LoginFromData",""],["SignUp",""],["Token",""]]});
+initSidebarItems({"struct":[["AuthUrl",""],["Claims",""],["LoginFromData",""],["SignUp",""],["Token",""]],"type":[["AuthError",""]]});

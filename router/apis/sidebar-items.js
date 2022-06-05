@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["authentication","Authenticate APIs"],["verify_email",""]]});
+initSidebarItems({"mod":[["authentication","Authenticate APIs"],["user",""],["verify_email",""]]});

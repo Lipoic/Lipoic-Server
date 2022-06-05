@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["auth_data",""],["code",""],["response",""]]});
+initSidebarItems({"mod":[["auth_data",""],["code",""],["response",""],["user",""]]});

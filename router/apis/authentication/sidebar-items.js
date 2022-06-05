@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["google_oauth","Get Google OAuth url"],["google_oauth_code","Google OAuth2 login"],["login","User login API"],["sign_up","Sign up account API"]]});
+initSidebarItems({"mod":[["api",""],["data",""],["util",""]]});
