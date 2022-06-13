@@ -1669,9 +1669,9 @@ dependencies = [
 [[package]]
 name = "rocket_cors"
 version = "0.6.0-alpha1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f5aa2c9cdb5dabbbf38bd4fb0038844cc47598399fed70fc938185679154793"
+source = "git+https://github.com/lawliet89/rocket_cors.git?branch=master#54fae0701dffbe5df686465780218644ee3fae5f"
 dependencies = [
+ "http",
  "log",
  "regex",
  "rocket",
