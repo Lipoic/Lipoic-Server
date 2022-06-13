@@ -9,4 +9,4 @@ edition = "2021"
 rocket = { version = "0.5.0-rc.2", features = ["json"] }
 database = { path = "../database" }
 util = { path = "../util" }
-rocket_cors = "0.5.1"
+rocket_cors = "0.6.0-alpha1"

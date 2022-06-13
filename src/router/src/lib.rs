@@ -30,6 +30,7 @@ pub struct Config {
 
     facebook_oauth_id: String,
     facebook_oauth_secret: String,
+    allowed_origins: Vec<String>,
 
     issuer: String,
 }
@@ -38,9 +39,20 @@ pub struct Config {
 #[doc(hidden)]
 pub async fn rocket(test: bool) -> Rocket<Build> {
     let rocket = rocket::build().attach(stage());
-    let figment = rocket.figment();
 
+    let figment = rocket.figment();
     let config: Config = figment.extract().expect("config");
+
+    let cors = CorsOptions::default()
+        .allowed_origins(AllowedOrigins::some_exact(&config.allowed_origins))
+        .allowed_methods(
+            vec![Method::Get, Method::Post, Method::Patch, Method::Delete]
+                .into_iter()
+                .map(From::from)
+                .collect(),
+        )
+        .allow_credentials(true);
+    rocket.attach(cors.to_cors().unwrap());
 
     if !test {
         db_init(rocket, config)
@@ -56,18 +68,6 @@ pub async fn rocket(test: bool) -> Rocket<Build> {
 
 #[doc(hidden)]
 pub fn stage() -> AdHoc {
-    let cors = CorsOptions::default()
-        .allowed_origins(AllowedOrigins::all())
-        .allowed_methods(
-            vec![Method::Get, Method::Post, Method::Patch, Method::Delete]
-                .into_iter()
-                .map(From::from)
-                .collect(),
-        )
-        .allow_credentials(true);
-
-    rocket::ignite().attach(cors.to_cors().unwrap());
-
     AdHoc::on_ignite("load router stage", |rocket| async {
         rocket
             .attach(AdHoc::config::<Config>())
