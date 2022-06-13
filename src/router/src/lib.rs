@@ -3,8 +3,10 @@ extern crate rocket;
 
 use crate::db::db_init;
 use rocket::fairing::AdHoc;
+use rocket::http::Method;
 use rocket::serde::Deserialize;
 use rocket::{Build, Rocket};
+use rocket_cors::{AllowedOrigins, CorsOptions};
 
 mod apis;
 mod catch;
@@ -54,6 +56,18 @@ pub async fn rocket(test: bool) -> Rocket<Build> {
 
 #[doc(hidden)]
 pub fn stage() -> AdHoc {
+    let cors = CorsOptions::default()
+        .allowed_origins(AllowedOrigins::all())
+        .allowed_methods(
+            vec![Method::Get, Method::Post, Method::Patch, Method::Delete]
+                .into_iter()
+                .map(From::from)
+                .collect(),
+        )
+        .allow_credentials(true);
+
+    rocket::ignite().attach(cors.to_cors().unwrap());
+
     AdHoc::on_ignite("load router stage", |rocket| async {
         rocket
             .attach(AdHoc::config::<Config>())
