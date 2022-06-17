@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["apis",""],["catch",""],["data",""],["resource",""]]});
+initSidebarItems({"fn":[["cors_stage",""]],"mod":[["apis",""],["catch",""],["data",""],["resource",""]]});
