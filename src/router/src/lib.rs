@@ -38,7 +38,7 @@ pub struct Config {
 /// rocket server
 #[doc(hidden)]
 pub async fn rocket(test: bool) -> Rocket<Build> {
-    let rocket = rocket::build().attach(stage());
+    let rocket = rocket::build().attach(stage()).attach(cors_stage());
 
     let config: Config = rocket.figment().extract().expect("config");
 
@@ -57,23 +57,35 @@ pub async fn rocket(test: bool) -> Rocket<Build> {
 #[doc(hidden)]
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load router stage", |rocket| async {
-        let config: Config = rocket.figment().extract().expect("config");
-
-        let cors = CorsOptions::default()
-            .allowed_origins(AllowedOrigins::some_exact(&config.allowed_origins))
-            .allowed_methods(
-                vec![Method::Get, Method::Post, Method::Patch, Method::Delete]
-                    .into_iter()
-                    .map(From::from)
-                    .collect(),
-            )
-            .allow_credentials(true);
-
         rocket
             .attach(AdHoc::config::<Config>())
             .attach(catch::stage())
             .attach(resource::stage())
             .attach(apis::stage())
-            .manage(cors.to_cors().unwrap())
+    })
+}
+
+fn cors_stage() -> AdHoc {
+    AdHoc::on_ignite("load CORS stage", |rocket| async {
+        let config: Config = rocket.figment().extract().expect("config");
+
+        let cors = CorsOptions::default()
+            .allowed_origins(AllowedOrigins::some_exact(&config.allowed_origins))
+            .allowed_methods(
+                vec![
+                    Method::Get,
+                    Method::Put,
+                    Method::Post,
+                    Method::Delete,
+                    Method::Options,
+                    Method::Patch,
+                ]
+                .into_iter()
+                .map(From::from)
+                .collect(),
+            )
+            .allow_credentials(true);
+
+        rocket.attach(cors.to_cors().unwrap())
     })
 }
