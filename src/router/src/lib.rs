@@ -69,21 +69,21 @@ fn cors_stage() -> AdHoc {
     AdHoc::on_ignite("load CORS stage", |rocket| async {
         let config: Config = rocket.figment().extract().expect("config");
 
+        let methods = vec![
+            Method::Get,
+            Method::Put,
+            Method::Post,
+            Method::Delete,
+            Method::Options,
+            Method::Patch,
+        ]
+        .into_iter()
+        .map(From::from)
+        .collect();
+
         let cors = CorsOptions::default()
             .allowed_origins(AllowedOrigins::some_exact(&config.allowed_origins))
-            .allowed_methods(
-                vec![
-                    Method::Get,
-                    Method::Put,
-                    Method::Post,
-                    Method::Delete,
-                    Method::Options,
-                    Method::Patch,
-                ]
-                .into_iter()
-                .map(From::from)
-                .collect(),
-            )
+            .allowed_methods(methods)
             .allow_credentials(true);
 
         rocket.attach(cors.to_cors().unwrap())
