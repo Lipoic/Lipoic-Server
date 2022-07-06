@@ -57,3 +57,5 @@ google_account_password = ""
 ## Facebook login OAuth
 facebook_oauth_id = ""
 facebook_oauth_secret = ""
+
+allowed_origins = ['http://localhost:3000', 'https://lipoic.org']
