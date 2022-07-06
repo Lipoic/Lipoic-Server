@@ -8,6 +8,7 @@ use crate::data::response::Response;
 use crate::data::user::UserInfo;
 use crate::Config;
 use database::model::auth::user::UserMode;
+use database::mongodb::bson;
 use database::mongodb::options::FindOneAndUpdateOptions;
 use database::{doc, mongodb::bson::oid::ObjectId, Database};
 use rocket::fairing::AdHoc;
@@ -185,20 +186,30 @@ async fn sign_up(
 async fn get_user_info(
     login_user_data: Result<LoginUserData, AuthError>,
     db: &State<Database>,
+    request_ip: RequestIp,
 ) -> Result<Json<Response<UserInfo>>, AuthError> {
     let login_user_data = match login_user_data {
         Ok(login_user_data) => login_user_data,
         Err(err) => return Err(err),
     };
+
+    let mut option = FindOneAndUpdateOptions::default();
+    option.upsert = Some(true);
+
     let find_user_data = db
         .user
         .as_ref()
         .unwrap()
-        .find_one(
+        .find_one_and_update(
             doc! {
                 "_id": ObjectId::parse_str(login_user_data.id).unwrap()
             },
-            None,
+            doc! {
+                "$addToSet":{
+                    "login_ips": &request_ip.0
+                }
+            },
+            option,
         )
         .await
         .unwrap();
@@ -226,6 +237,7 @@ async fn edit_user_info(
     edit_user_data: Form<EditUserData>,
     login_user_data: Result<LoginUserData, AuthError>,
     db: &State<Database>,
+    request_ip: RequestIp,
 ) -> Result<Json<Response<UserInfo>>, AuthError> {
     // Check the user is logged in.
     let login_user_data = match login_user_data {
@@ -257,14 +269,14 @@ async fn edit_user_info(
         }
     }
 
-    let mut option = FindOneAndUpdateOptions::default();
-    option.upsert = Some(true);
-
     let username = if let Some(username) = &edit_user_data.username {
         username
     } else {
         &login_user_data.username
     };
+
+    let mut option = FindOneAndUpdateOptions::default();
+    option.upsert = Some(true);
 
     let update_user_data = db
         .user
@@ -277,7 +289,12 @@ async fn edit_user_info(
             doc! {
                 "$setOnInsert": {
                    "username": username,
-                   "modes": &modes
+                },
+                "$addToSet": {
+                    "login_ips": &request_ip.0,
+                    "modes": {
+                        "$each": bson::to_bson(&modes).unwrap()
+                    },
                 }
             },
             option,
