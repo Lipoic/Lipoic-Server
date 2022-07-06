@@ -282,8 +282,8 @@ async fn edit_user_info(
             modes.retain(|x| *x != UserMode::Teacher);
         }
     }
-    if edit_user_data.is_teacher.is_some() {
-        if edit_user_data.is_teacher.unwrap() {
+    if edit_user_data.is_parents.is_some() {
+        if edit_user_data.is_parents.unwrap() {
             modes.push(UserMode::Parents);
         } else {
             modes.retain(|x| *x != UserMode::Parents);
