@@ -34,6 +34,7 @@ impl Code {
         LoginPasswordError(4, "Input password error."),
         SignUpEmailAlreadyRegistered(5, "This email is already registered."),
         VerifyEmailError(6, "This code is invalid."),
-        AuthError(7, "This token is invalid.")
+        AuthError(7, "This token is invalid."),
+        EditUserFailed(8, "Edit the user info failed.")
     }
 }

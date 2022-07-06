@@ -25,6 +25,7 @@ use util::util::create_exp;
 /// # User login API
 /// ## Request
 /// - Path `/user/login`
+/// - Method: `POST`
 /// - FromData [LoginFromData]
 /// ## Response
 /// - Code
@@ -101,6 +102,7 @@ async fn login(
 /// # Sign up account API
 /// ## Request
 /// - Path `/user/sign-up`
+/// - Method `POST`
 /// - FromData [SignUp]
 /// ## Response
 /// - Code
@@ -110,7 +112,7 @@ async fn login(
 ///     - [Code::Ok]
 /// ## Curl Example
 /// ```bash
-/// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 -F username=abc -F modes='["Student"]' http://127.0.0.1:8000/user/sign-up
+/// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 -F username=abc -F modes='["Student"]' http://<host>/user/sign-up
 /// ```
 #[post("/sign-up", data = "<sign_up>")]
 async fn sign_up(
@@ -170,6 +172,7 @@ async fn sign_up(
 /// # Get login user info
 /// ## Request
 /// - Path `/user/info`
+/// - Method: `GET`
 /// - [X] Authorization
 /// ## Response
 /// - Code
@@ -180,7 +183,7 @@ async fn sign_up(
 ///     - [UserInfo]
 /// ## Curl Example
 /// ```bash
-/// curl -X GET -H "Authorization: Bearer {Token}" http://127.0.0.1:8000/user/info
+/// curl -X GET -H "Authorization: Bearer {Token}" http://<host>/user/info
 /// ```
 #[get("/info")]
 async fn get_user_info(
@@ -188,6 +191,7 @@ async fn get_user_info(
     db: &State<Database>,
     request_ip: RequestIp,
 ) -> Result<Json<Response<UserInfo>>, AuthError> {
+    // Check the user is logged in.
     let login_user_data = match login_user_data {
         Ok(login_user_data) => login_user_data,
         Err(err) => return Err(err),
@@ -232,6 +236,23 @@ async fn get_user_info(
     }
 }
 
+/// # Edit user info
+/// ## Request
+/// - Path `/user/info`
+/// - Method: `PATCH`
+/// - FromData [EditUserData]
+/// - [X] Authorization
+/// ## Response
+/// - Code
+///     - [Code::Ok]
+///     - [Code::AuthError]
+///     - [Code::LoginUserNotFoundError]
+/// - Content
+///     - [UserInfo]
+/// ## Curl Example
+/// ```bash
+/// curl -X PATCH -H "Authorization: Bearer {Token}" -F username='new name' -F is_student=true http://<host>/user/info
+/// ```
 #[patch("/info", data = "<edit_user_data>")]
 async fn edit_user_info(
     edit_user_data: Form<EditUserData>,
@@ -245,7 +266,7 @@ async fn edit_user_info(
         Err(err) => return Err(err),
     };
 
-    let mut modes: Vec<UserMode> = vec![];
+    let mut modes: Vec<UserMode> = login_user_data.modes;
 
     if edit_user_data.is_student.is_some() {
         if edit_user_data.is_student.unwrap() {
@@ -289,12 +310,10 @@ async fn edit_user_info(
             doc! {
                 "$setOnInsert": {
                    "username": username,
+                   "modes": bson::to_bson(&modes).unwrap()
                 },
                 "$addToSet": {
                     "login_ips": &request_ip.0,
-                    "modes": {
-                        "$each": bson::to_bson(&modes).unwrap()
-                    },
                 }
             },
             option,
@@ -314,7 +333,7 @@ async fn edit_user_info(
         ))
     } else {
         Err(Unauthorized(Some(Response::new(
-            Code::LoginUserNotFoundError,
+            Code::EditUserFailed,
             None,
         ))))
     }
