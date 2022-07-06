@@ -57,6 +57,14 @@ pub struct LoginUserData {
     pub(crate) modes: Vec<UserMode>,
 }
 
+#[derive(FromForm)]
+pub struct EditUserData {
+    pub(crate) username: Option<String>,
+    pub(crate) is_student: Option<bool>,
+    pub(crate) is_teacher: Option<bool>,
+    pub(crate) is_parents: Option<bool>,
+}
+
 pub type AuthError = Unauthorized<Json<Response<String>>>;
 
 impl LoginUserData {
