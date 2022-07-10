@@ -20,6 +20,7 @@ use super::util::connect_account;
 /// # Get Google OAuth url
 /// ## Request
 /// - Path `/authentication/google/url`
+/// - Method `GET`
 /// - Parameters
 ///     - `redirect_uri`
 /// ## Response
@@ -47,6 +48,7 @@ fn google_oauth(redirect_uri: String, config: &State<Config>) -> Json<Response<A
 /// # Google OAuth2 login
 /// ## Request
 /// - Path `/authentication/google`
+/// - Method `GET`
 /// - Parameters
 ///     - `code` - A OAuth2 code
 ///     - `oauth_redirect_uri` - A OAuth2 redirect uri
@@ -88,6 +90,7 @@ async fn google_oauth_code(
 /// # Get Facebook OAuth url
 /// ## Request
 /// - Path `/authentication/facebook/url`
+/// - Method `GET`
 /// - Parameters
 ///     - `redirect_uri`
 /// ## Response
@@ -115,6 +118,7 @@ fn facebook_oauth(redirect_uri: String, config: &State<Config>) -> Json<Response
 /// # Facebook OAuth2 login
 /// ## Request
 /// - Path `/authentication/facebook`
+/// - Method `GET`
 /// - Parameters
 ///     - `code` - A OAuth2 code
 ///     - `oauth_redirect_uri` - A OAuth2 redirect uri

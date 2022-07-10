@@ -27,7 +27,7 @@ pub struct ConnectAccount {
     pub email: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum UserMode {
     Student,
     Teacher,
