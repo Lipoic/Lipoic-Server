@@ -115,6 +115,14 @@
 <span id="110">110</span>
 <span id="111">111</span>
 <span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::code::Code</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::response::Response</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Config</span>;
@@ -172,6 +180,14 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">username</span>: <span class="ident">String</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">verified_email</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">modes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">UserMode</span><span class="op">&gt;</span>,
+}
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">FromForm</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">EditUserData</span> {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">username</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">is_student</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">is_teacher</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">is_parents</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">AuthError</span> <span class="op">=</span> <span class="ident">Unauthorized</span><span class="op">&lt;</span><span class="ident">Json</span><span class="op">&lt;</span><span class="ident">Response</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>;

@@ -230,15 +230,141 @@
 <span id="225">225</span>
 <span id="226">226</span>
 <span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::apis::authentication::data</span>::{<span class="ident">CreateUserInfo</span>, <span class="ident">RequestIp</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::apis::authentication::util::create_and_update_user_info</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::auth_data::Claims</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::auth_data</span>::{<span class="ident">AuthError</span>, <span class="ident">LoginUserData</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::auth_data</span>::{<span class="ident">LoginFromData</span>, <span class="ident">SignUp</span>, <span class="ident">Token</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::auth_data</span>::{
+    <span class="ident">AuthError</span>, <span class="ident">Claims</span>, <span class="ident">EditUserData</span>, <span class="ident">LoginFromData</span>, <span class="ident">LoginUserData</span>, <span class="ident">SignUp</span>, <span class="ident">Token</span>,
+};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::code::Code</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::response::Response</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::data::user::UserInfo</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Config</span>;
+<span class="kw">use</span> <span class="ident">database::model::auth::user::UserMode</span>;
+<span class="kw">use</span> <span class="ident">database::mongodb::bson</span>;
+<span class="kw">use</span> <span class="ident">database::mongodb::options::FindOneAndUpdateOptions</span>;
 <span class="kw">use</span> <span class="ident">database</span>::{<span class="ident">doc</span>, <span class="ident">mongodb::bson::oid::ObjectId</span>, <span class="ident">Database</span>};
 <span class="kw">use</span> <span class="ident">rocket::fairing::AdHoc</span>;
 <span class="kw">use</span> <span class="ident">rocket::form::Form</span>;
@@ -254,6 +380,7 @@
 <span class="doccomment">/// # User login API</span>
 <span class="doccomment">/// ## Request</span>
 <span class="doccomment">/// - Path `/user/login`</span>
+<span class="doccomment">/// - Method: `POST`</span>
 <span class="doccomment">/// - FromData [LoginFromData]</span>
 <span class="doccomment">/// ## Response</span>
 <span class="doccomment">/// - Code</span>
@@ -330,6 +457,7 @@
 <span class="doccomment">/// # Sign up account API</span>
 <span class="doccomment">/// ## Request</span>
 <span class="doccomment">/// - Path `/user/sign-up`</span>
+<span class="doccomment">/// - Method `POST`</span>
 <span class="doccomment">/// - FromData [SignUp]</span>
 <span class="doccomment">/// ## Response</span>
 <span class="doccomment">/// - Code</span>
@@ -339,7 +467,7 @@
 <span class="doccomment">///     - [Code::Ok]</span>
 <span class="doccomment">/// ## Curl Example</span>
 <span class="doccomment">/// ```bash</span>
-<span class="doccomment">/// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 -F username=abc -F modes=&#39;[&quot;Student&quot;]&#39; http://127.0.0.1:8000/user/sign-up</span>
+<span class="doccomment">/// curl -X POST -F email=aijdfajodwsdf@gmail.com -F password=123 -F username=abc -F modes=&#39;[&quot;Student&quot;]&#39; http://&lt;host&gt;/user/sign-up</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">post</span>(<span class="string">&quot;/sign-up&quot;</span>, <span class="ident">data</span> <span class="op">=</span> <span class="string">&quot;&lt;sign_up&gt;&quot;</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">sign_up</span>(
@@ -399,6 +527,7 @@
 <span class="doccomment">/// # Get login user info</span>
 <span class="doccomment">/// ## Request</span>
 <span class="doccomment">/// - Path `/user/info`</span>
+<span class="doccomment">/// - Method: `GET`</span>
 <span class="doccomment">/// - [X] Authorization</span>
 <span class="doccomment">/// ## Response</span>
 <span class="doccomment">/// - Code</span>
@@ -409,26 +538,37 @@
 <span class="doccomment">///     - [UserInfo]</span>
 <span class="doccomment">/// ## Curl Example</span>
 <span class="doccomment">/// ```bash</span>
-<span class="doccomment">/// curl -X GET -H &quot;Authorization: Bearer {Token}&quot; http://127.0.0.1:8000/user/info</span>
+<span class="doccomment">/// curl -X GET -H &quot;Authorization: Bearer {Token}&quot; http://&lt;host&gt;/user/info</span>
 <span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">get</span>(<span class="string">&quot;/info&quot;</span>)]</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">user_info</span>(
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_user_info</span>(
     <span class="ident">login_user_data</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">LoginUserData</span>, <span class="ident">AuthError</span><span class="op">&gt;</span>,
     <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">State</span><span class="op">&lt;</span><span class="ident">Database</span><span class="op">&gt;</span>,
+    <span class="ident">request_ip</span>: <span class="ident">RequestIp</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Json</span><span class="op">&lt;</span><span class="ident">Response</span><span class="op">&lt;</span><span class="ident">UserInfo</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">AuthError</span><span class="op">&gt;</span> {
+    <span class="comment">// Check the user is logged in.</span>
     <span class="kw">let</span> <span class="ident">login_user_data</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">login_user_data</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">login_user_data</span>) =&gt; <span class="ident">login_user_data</span>,
         <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
     };
+
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">option</span> <span class="op">=</span> <span class="ident">FindOneAndUpdateOptions::default</span>();
+    <span class="ident">option</span>.<span class="ident">upsert</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="bool-val">true</span>);
+
     <span class="kw">let</span> <span class="ident">find_user_data</span> <span class="op">=</span> <span class="ident">db</span>
         .<span class="ident">user</span>
         .<span class="ident">as_ref</span>()
         .<span class="ident">unwrap</span>()
-        .<span class="ident">find_one</span>(
+        .<span class="ident">find_one_and_update</span>(
             <span class="macro">doc!</span> {
                 <span class="string">&quot;_id&quot;</span>: <span class="ident">ObjectId::parse_str</span>(<span class="ident">login_user_data</span>.<span class="ident">id</span>).<span class="ident">unwrap</span>()
             },
-            <span class="prelude-val">None</span>,
+            <span class="macro">doc!</span> {
+                <span class="string">&quot;$addToSet&quot;</span>:{
+                    <span class="string">&quot;login_ips&quot;</span>: <span class="kw-2">&amp;</span><span class="ident">request_ip</span>.<span class="number">0</span>
+                }
+            },
+            <span class="ident">option</span>,
         )
         .<span class="kw">await</span>
         .<span class="ident">unwrap</span>();
@@ -451,10 +591,116 @@
     }
 }
 
+<span class="doccomment">/// # Edit user info</span>
+<span class="doccomment">/// ## Request</span>
+<span class="doccomment">/// - Path `/user/info`</span>
+<span class="doccomment">/// - Method: `PATCH`</span>
+<span class="doccomment">/// - FromData [EditUserData]</span>
+<span class="doccomment">/// - [X] Authorization</span>
+<span class="doccomment">/// ## Response</span>
+<span class="doccomment">/// - Code</span>
+<span class="doccomment">///     - [Code::Ok]</span>
+<span class="doccomment">///     - [Code::AuthError]</span>
+<span class="doccomment">///     - [Code::LoginUserNotFoundError]</span>
+<span class="doccomment">/// - Content</span>
+<span class="doccomment">///     - [UserInfo]</span>
+<span class="doccomment">/// ## Curl Example</span>
+<span class="doccomment">/// ```bash</span>
+<span class="doccomment">/// curl -X PATCH -H &quot;Authorization: Bearer {Token}&quot; -F username=&#39;new name&#39; -F is_student=true http://&lt;host&gt;/user/info</span>
+<span class="doccomment">/// ```</span>
+<span class="attribute">#[<span class="ident">patch</span>(<span class="string">&quot;/info&quot;</span>, <span class="ident">data</span> <span class="op">=</span> <span class="string">&quot;&lt;edit_user_data&gt;&quot;</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">edit_user_info</span>(
+    <span class="ident">edit_user_data</span>: <span class="ident">Form</span><span class="op">&lt;</span><span class="ident">EditUserData</span><span class="op">&gt;</span>,
+    <span class="ident">login_user_data</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">LoginUserData</span>, <span class="ident">AuthError</span><span class="op">&gt;</span>,
+    <span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">State</span><span class="op">&lt;</span><span class="ident">Database</span><span class="op">&gt;</span>,
+    <span class="ident">request_ip</span>: <span class="ident">RequestIp</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Json</span><span class="op">&lt;</span><span class="ident">Response</span><span class="op">&lt;</span><span class="ident">UserInfo</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">AuthError</span><span class="op">&gt;</span> {
+    <span class="comment">// Check the user is logged in.</span>
+    <span class="kw">let</span> <span class="ident">login_user_data</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">login_user_data</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">login_user_data</span>) =&gt; <span class="ident">login_user_data</span>,
+        <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+    };
+
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">modes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">UserMode</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">login_user_data</span>.<span class="ident">modes</span>;
+
+    <span class="kw">if</span> <span class="ident">edit_user_data</span>.<span class="ident">is_student</span>.<span class="ident">is_some</span>() {
+        <span class="kw">if</span> <span class="ident">edit_user_data</span>.<span class="ident">is_student</span>.<span class="ident">unwrap</span>() {
+            <span class="ident">modes</span>.<span class="ident">push</span>(<span class="ident">UserMode::Student</span>);
+        } <span class="kw">else</span> {
+            <span class="ident">modes</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">x</span> <span class="op">!</span><span class="op">=</span> <span class="ident">UserMode::Student</span>);
+        }
+    }
+    <span class="kw">if</span> <span class="ident">edit_user_data</span>.<span class="ident">is_teacher</span>.<span class="ident">is_some</span>() {
+        <span class="kw">if</span> <span class="ident">edit_user_data</span>.<span class="ident">is_teacher</span>.<span class="ident">unwrap</span>() {
+            <span class="ident">modes</span>.<span class="ident">push</span>(<span class="ident">UserMode::Teacher</span>);
+        } <span class="kw">else</span> {
+            <span class="ident">modes</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">x</span> <span class="op">!</span><span class="op">=</span> <span class="ident">UserMode::Teacher</span>);
+        }
+    }
+    <span class="kw">if</span> <span class="ident">edit_user_data</span>.<span class="ident">is_parents</span>.<span class="ident">is_some</span>() {
+        <span class="kw">if</span> <span class="ident">edit_user_data</span>.<span class="ident">is_parents</span>.<span class="ident">unwrap</span>() {
+            <span class="ident">modes</span>.<span class="ident">push</span>(<span class="ident">UserMode::Parents</span>);
+        } <span class="kw">else</span> {
+            <span class="ident">modes</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">x</span> <span class="op">!</span><span class="op">=</span> <span class="ident">UserMode::Parents</span>);
+        }
+    }
+
+    <span class="kw">let</span> <span class="ident">username</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">username</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">edit_user_data</span>.<span class="ident">username</span> {
+        <span class="ident">username</span>
+    } <span class="kw">else</span> {
+        <span class="kw-2">&amp;</span><span class="ident">login_user_data</span>.<span class="ident">username</span>
+    };
+
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">option</span> <span class="op">=</span> <span class="ident">FindOneAndUpdateOptions::default</span>();
+    <span class="ident">option</span>.<span class="ident">upsert</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="bool-val">true</span>);
+
+    <span class="kw">let</span> <span class="ident">update_user_data</span> <span class="op">=</span> <span class="ident">db</span>
+        .<span class="ident">user</span>
+        .<span class="ident">as_ref</span>()
+        .<span class="ident">unwrap</span>()
+        .<span class="ident">find_one_and_update</span>(
+            <span class="macro">doc!</span> {
+                <span class="string">&quot;_id&quot;</span>: <span class="ident">ObjectId::parse_str</span>(<span class="ident">login_user_data</span>.<span class="ident">id</span>).<span class="ident">unwrap</span>()
+            },
+            <span class="macro">doc!</span> {
+                <span class="string">&quot;$setOnInsert&quot;</span>: {
+                   <span class="string">&quot;username&quot;</span>: <span class="ident">username</span>,
+                   <span class="string">&quot;modes&quot;</span>: <span class="ident">bson::to_bson</span>(<span class="kw-2">&amp;</span><span class="ident">modes</span>).<span class="ident">unwrap</span>()
+                },
+                <span class="string">&quot;$addToSet&quot;</span>: {
+                    <span class="string">&quot;login_ips&quot;</span>: <span class="kw-2">&amp;</span><span class="ident">request_ip</span>.<span class="number">0</span>,
+                }
+            },
+            <span class="ident">option</span>,
+        )
+        .<span class="kw">await</span>
+        .<span class="ident">unwrap</span>();
+
+    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">user_info</span>) <span class="op">=</span> <span class="ident">update_user_data</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">Response::new</span>(
+            <span class="ident">Code::Ok</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">UserInfo</span> {
+                <span class="ident">username</span>: <span class="ident">user_info</span>.<span class="ident">username</span>,
+                <span class="ident">email</span>: <span class="ident">user_info</span>.<span class="ident">email</span>,
+                <span class="ident">modes</span>: <span class="ident">user_info</span>.<span class="ident">modes</span>,
+                <span class="ident">connects</span>: <span class="ident">user_info</span>.<span class="ident">connects</span>,
+            }),
+        ))
+    } <span class="kw">else</span> {
+        <span class="prelude-val">Err</span>(<span class="ident">Unauthorized</span>(<span class="prelude-val">Some</span>(<span class="ident">Response::new</span>(
+            <span class="ident">Code::EditUserFailed</span>,
+            <span class="prelude-val">None</span>,
+        ))))
+    }
+}
+
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">stage</span>() -&gt; <span class="ident">AdHoc</span> {
     <span class="ident">AdHoc::on_ignite</span>(<span class="string">&quot;load api stage&quot;</span>, <span class="op">|</span><span class="ident">rocket</span><span class="op">|</span> <span class="kw">async</span> {
-        <span class="ident">rocket</span>.<span class="ident">mount</span>(<span class="string">&quot;/user&quot;</span>, <span class="macro">routes!</span>[<span class="ident">login</span>, <span class="ident">sign_up</span>, <span class="ident">user_info</span>])
+        <span class="ident">rocket</span>.<span class="ident">mount</span>(
+            <span class="string">&quot;/user&quot;</span>,
+            <span class="macro">routes!</span>[<span class="ident">login</span>, <span class="ident">sign_up</span>, <span class="ident">get_user_info</span>, <span class="ident">edit_user_info</span>],
+        )
     })
 }
 </code></pre></div>

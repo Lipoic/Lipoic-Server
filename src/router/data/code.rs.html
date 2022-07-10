@@ -42,6 +42,7 @@
 <span id="37">37</span>
 <span id="38">38</span>
 <span id="39">39</span>
+<span id="40">40</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rocket::serde::Serialize</span>;
 
 <span class="doccomment">/// # Example</span>
@@ -78,7 +79,8 @@
         <span class="ident">LoginPasswordError</span>(<span class="number">4</span>, <span class="string">&quot;Input password error.&quot;</span>),
         <span class="ident">SignUpEmailAlreadyRegistered</span>(<span class="number">5</span>, <span class="string">&quot;This email is already registered.&quot;</span>),
         <span class="ident">VerifyEmailError</span>(<span class="number">6</span>, <span class="string">&quot;This code is invalid.&quot;</span>),
-        <span class="ident">AuthError</span>(<span class="number">7</span>, <span class="string">&quot;This token is invalid.&quot;</span>)
+        <span class="ident">AuthError</span>(<span class="number">7</span>, <span class="string">&quot;This token is invalid.&quot;</span>),
+        <span class="ident">EditUserFailed</span>(<span class="number">8</span>, <span class="string">&quot;Edit the user info failed.&quot;</span>)
     }
 }
 </code></pre></div>
