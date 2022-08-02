@@ -9,4 +9,4 @@ edition = "2021"
 mongodb = "2.2.2"
 
 tokio = "*"
-serde = "1.0.137"
+serde = "1.0.141"
