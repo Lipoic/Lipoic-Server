@@ -11,7 +11,7 @@ pub struct Database {
     pub user: Option<Collection<model::auth::user::User>>,
 }
 
-/// Init mongodb
+// Init mongodb
 pub async fn init(mongodb_url: String) -> mongodb::error::Result<Database> {
     let mut client_options = ClientOptions::parse(mongodb_url).await?;
 
