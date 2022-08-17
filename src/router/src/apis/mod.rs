@@ -9,8 +9,8 @@ use rocket::fairing::AdHoc;
 pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load api stage", |rocket| async {
         rocket
-            .attach(authentication::api::stage())
+            .attach(authentication::authentication_api::stage())
             .attach(verify_email::stage())
-            .attach(user::api::stage())
+            .attach(user::user_api::stage())
     })
 }

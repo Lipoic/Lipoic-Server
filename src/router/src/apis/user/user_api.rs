@@ -1,6 +1,6 @@
 use crate::apis::authentication::data::{CreateUserInfo, RequestIp};
 use crate::apis::authentication::util::create_and_update_user_info;
-use crate::data::auth_data::{
+use crate::apis::user::user_data::{
     AuthError, Claims, EditUserData, LoginFromData, LoginUserData, SignUp, Token,
 };
 use crate::data::code::Code;

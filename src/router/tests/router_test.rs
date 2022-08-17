@@ -16,7 +16,7 @@ async fn hello_test() {
 }
 
 #[rocket::async_test]
-async fn notfund_test() {
+async fn notfound_test() {
     let client = Client::tracked(router::rocket(true).await)
         .await
         .expect("valid rocket instance");
