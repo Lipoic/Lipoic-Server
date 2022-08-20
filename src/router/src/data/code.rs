@@ -1,12 +1,16 @@
 use rocket::serde::Serialize;
 
-/// # Example
-/// ```rust
+///# Example
+///```rust
+///use router::data::code::Code;
+///use router::generate_code;
+///
 ///generate_code! {
-///    Ok(1, "Ok."),
-///    NotFound(2, "Not found resource.")
+///    Ok(200, "Ok."),
+///    NotFound(404, "Resource not found.")
 ///}
 /// ```
+#[macro_export]
 macro_rules! generate_code {
     ($($name:ident ($code:expr, $message:literal)),+) => {
         $(
@@ -20,8 +24,8 @@ macro_rules! generate_code {
 #[derive(Serialize, Debug)]
 #[serde(crate = "rocket::serde")]
 pub struct Code {
-    pub(crate) code: usize,
-    pub(crate) message: &'static str,
+    pub code: usize,
+    pub message: &'static str,
 }
 
 impl Code {
