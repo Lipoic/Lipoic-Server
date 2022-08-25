@@ -341,7 +341,7 @@ async fn edit_user_info(
 
 #[doc(hidden)]
 pub fn stage() -> AdHoc {
-    AdHoc::on_ignite("load api stage", |rocket| async {
+    AdHoc::on_ignite("load user api stage", |rocket| async {
         rocket.mount(
             "/user",
             routes![login, sign_up, get_user_info, edit_user_info],

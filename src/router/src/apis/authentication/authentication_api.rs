@@ -159,7 +159,7 @@ async fn facebook_oauth_code(
 
 #[doc(hidden)]
 pub fn stage() -> AdHoc {
-    AdHoc::on_ignite("load authentication stage", |rocket| async {
+    AdHoc::on_ignite("load authentication api stage", |rocket| async {
         rocket.mount(
             "/authentication",
             routes![
