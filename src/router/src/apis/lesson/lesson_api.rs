@@ -74,8 +74,18 @@ async fn create_lesson(
 }
 
 /// # Get lesson info
-#[get("/")]
-async fn get_lesson() -> Json<Response<String>> {
+#[get("/<id>")]
+async fn get_lesson(id: String, login_user_data: Result<LoginUserData, AuthError>, db: &State<Database>) -> Json<Response<String>> {
+    let lesson = db.lesson.as_ref().unwrap().find_one(doc! {
+        "_id": ObjectId::parse_str(&id).unwrap()
+    }, None).await.unwrap();
+
+    Response::new(Code::Ok, Some(String::from("TODO")))
+}
+
+/// # Edit lesson info
+#[patch("/")]
+async fn edit_lesson() -> Json<Response<String>> {
     Response::new(Code::Ok, Some(String::from("TODO")))
 }
 
@@ -84,7 +94,7 @@ pub fn stage() -> AdHoc {
     AdHoc::on_ignite("load lesson api stage", |rocket| async {
         rocket.mount(
             "/lesson",
-            routes![create_lesson, get_lesson],
+            routes![create_lesson, get_lesson, edit_lesson],
         )
     })
 }
