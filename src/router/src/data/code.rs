@@ -31,6 +31,7 @@ pub struct Code {
 impl Code {
     generate_code! {
         Ok(200, "Ok."),
+        Forbidden(403, "Forbidden."),
         NotFound(404, "Resource not found."),
         OAuthCodeError(1, "OAuth auth code error."),
         OAuthGetUserInfoError(2, "OAuth get user info error."),

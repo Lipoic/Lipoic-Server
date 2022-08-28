@@ -128,7 +128,7 @@ impl OAuthData {
         let mut redirect_uri = self.redirect_uri.to_string();
 
         // Because Facebook requires "/" at the end of the redirect uri
-        if (matches!(self.account_type, ConnectType::Facebook) && !redirect_uri.ends_with('/')) {
+        if matches!(self.account_type, ConnectType::Facebook) && !redirect_uri.ends_with('/') {
             redirect_uri = format!("{}/", redirect_uri);
         }
 

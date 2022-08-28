@@ -4,7 +4,7 @@ use rocket::serde::json::Json;
 use rocket::State;
 use database::{Database, doc};
 use database::model::lesson::lesson_data::Lesson;
-use database::model::lesson::lesson_permission::{LessonPermission};
+use database::model::lesson::lesson_permission::{LessonPermission, LessonPermissionType};
 use database::model::lesson::lesson_state::LessonState;
 use database::mongodb::bson::DateTime;
 use database::mongodb::bson::oid::ObjectId;
@@ -74,18 +74,61 @@ async fn create_lesson(
 }
 
 /// # Get lesson info
+/// ## Request
+/// - Path `/lesson`
+/// - Method `GET`
+/// - FromData [LessonApiData]
+/// - [X] Authorization
+/// ## Response
+/// - Code
+///     - [Code::Ok]
+///     - [Code::Forbidden]
+///     - [Code::NotFound]
+/// - Content
+///     - [Lesson]
 #[get("/<id>")]
-async fn get_lesson(id: String, login_user_data: Result<LoginUserData, AuthError>, db: &State<Database>) -> Json<Response<String>> {
+async fn get_lesson(id: String, login_user_data: Result<LoginUserData, AuthError>, db: &State<Database>) -> Json<Response<Lesson>> {
     let lesson = db.lesson.as_ref().unwrap().find_one(doc! {
         "_id": ObjectId::parse_str(&id).unwrap()
     }, None).await.unwrap();
 
-    Response::new(Code::Ok, Some(String::from("TODO")))
+    if let Some(lesson) = lesson {
+        let permission = &lesson.permission;
+        let permission_type = &permission.permission_type;
+        let mut can_access = false;
+
+        match permission_type {
+            LessonPermissionType::All => {
+                can_access = true;
+            }
+            LessonPermissionType::Classroom => {
+                // TODO: Check if the user is in the classroom.
+                can_access = true;
+            }
+            LessonPermissionType::Select => {
+                let allow_users = &permission.allows;
+
+                if login_user_data.is_ok() && allow_users.is_some() {
+                    let user_id = &login_user_data.unwrap().id.parse().unwrap();
+                    can_access = allow_users.as_ref().unwrap().contains(user_id);
+                }
+            }
+        }
+
+        if can_access {
+            Response::new(Code::Ok, Some(lesson))
+        } else {
+            Response::new(Code::Forbidden, None)
+        }
+    } else {
+        Response::new(Code::NotFound, None)
+    }
 }
 
 /// # Edit lesson info
 #[patch("/")]
 async fn edit_lesson() -> Json<Response<String>> {
+    // TODO: Edit lesson info.
     Response::new(Code::Ok, Some(String::from("TODO")))
 }
 
