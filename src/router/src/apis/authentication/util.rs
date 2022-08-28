@@ -1,14 +1,13 @@
 use database::{
+    Database,
     doc,
     model::auth::user::{ConnectAccount, User, UserMode},
     mongodb::bson,
-    Database,
 };
 use rocket::{response::status::BadRequest, serde::json::Json, State};
 use util::{jwt::create_jwt_token, oauth::OAuthData, util::create_exp};
 
 use crate::data::{
-    auth_data::{Claims, Token},
     code::Code,
     response::Response,
 };
@@ -16,6 +15,7 @@ use crate::data::{
 use super::data::{CreateUserInfo, RequestIp};
 use database::mongodb::options::FindOneAndUpdateOptions;
 use database::{Collection, Error};
+use crate::apis::user::user_data::{Claims, Token};
 
 pub async fn connect_account(
     oauth: OAuthData,

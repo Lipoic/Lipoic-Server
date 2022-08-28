@@ -10,7 +10,7 @@ use rocket_cors::{AllowedOrigins, CorsOptions};
 
 mod apis;
 mod catch;
-mod data;
+pub mod data;
 #[doc(hidden)]
 mod db;
 mod resource;
@@ -50,6 +50,7 @@ pub async fn rocket(test: bool) -> Rocket<Build> {
         rocket.manage(database::Database {
             client: None,
             user: None,
+            lesson: None,
         })
     }
 }
@@ -77,9 +78,9 @@ fn cors_stage() -> AdHoc {
             Method::Options,
             Method::Patch,
         ]
-        .into_iter()
-        .map(From::from)
-        .collect();
+            .into_iter()
+            .map(From::from)
+            .collect();
 
         let cors = CorsOptions::default()
             .allowed_origins(AllowedOrigins::some_exact(&config.allowed_origins))

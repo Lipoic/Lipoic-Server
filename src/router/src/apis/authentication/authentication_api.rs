@@ -9,7 +9,7 @@ use rocket::serde::json::Json;
 use rocket::State;
 use util::oauth::OAuthData;
 
-use crate::data::auth_data::{AuthUrl, Token};
+use crate::apis::user::user_data::{AuthUrl, Token};
 use crate::data::code::Code;
 use crate::data::response::Response;
 use crate::Config;
@@ -159,7 +159,7 @@ async fn facebook_oauth_code(
 
 #[doc(hidden)]
 pub fn stage() -> AdHoc {
-    AdHoc::on_ignite("load authentication stage", |rocket| async {
+    AdHoc::on_ignite("load authentication api stage", |rocket| async {
         rocket.mount(
             "/authentication",
             routes![

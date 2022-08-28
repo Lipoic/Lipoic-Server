@@ -10,3 +10,4 @@ mongodb = "2.2.2"
 
 tokio = "*"
 serde = "1.0.137"
+rocket = "0.5.0-rc.2"

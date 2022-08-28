@@ -5,13 +5,16 @@ pub use mongodb::bson::doc;
 pub use mongodb::error::Error;
 pub use mongodb::Collection;
 use mongodb::{options::ClientOptions, Client};
+use model::lesson::lesson_data::Lesson;
+use crate::model::auth::user::User;
 
 pub struct Database {
     pub client: Option<Client>,
-    pub user: Option<Collection<model::auth::user::User>>,
+    pub user: Option<Collection<User>>,
+    pub lesson: Option<Collection<Lesson>>,
 }
 
-/// Init mongodb
+// Init mongodb
 pub async fn init(mongodb_url: String) -> mongodb::error::Result<Database> {
     let mut client_options = ClientOptions::parse(mongodb_url).await?;
 
@@ -30,6 +33,7 @@ pub async fn init(mongodb_url: String) -> mongodb::error::Result<Database> {
 
     Ok(Database {
         client: Some(client),
-        user: Some(db.collection("user")),
+        user: Some(db.collection::<User>("user")),
+        lesson: Some(db.collection::<Lesson>("lesson")),
     })
 }
