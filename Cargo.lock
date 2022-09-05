@@ -1670,7 +1670,7 @@ dependencies = [
 [[package]]
 name = "rocket_cors"
 version = "0.6.0-alpha1"
-source = "git+https://github.com/lawliet89/rocket_cors.git?branch=master#54fae0701dffbe5df686465780218644ee3fae5f"
+source = "git+https://github.com/lawliet89/rocket_cors.git?branch=master#c17e8145baa4790319fdb6a473e465b960f55e7c"
 dependencies = [
  "http",
  "log",
